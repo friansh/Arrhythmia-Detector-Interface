@@ -1,0 +1,92 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function() {
+    return view('landing');
+})->name('landing');
+
+Route::group( [ 'prefix' => 'login' ], function() { 
+    Route::get('/', function() {
+        return view('login');
+    })->name('login')->middleware('guest');
+    Route::post('/', 'UserController@login');
+});
+
+Route::group( [ 'prefix' => 'register' ], function() { 
+    Route::get('/', function() {
+        return view('register');
+    });
+    Route::post('/', 'UserController@register');
+});
+
+Route::get( '/logout', 'UserController@logout' );
+
+Route::group( ['prefix' => 'admin'], function() {
+    Route::get('/', function() {
+        return view('admin.dashboard');
+    });
+    Route::get('/promote', function() {
+        return view('admin.promote');
+    });
+
+} );
+
+Route::group( [ 'prefix' => 'doctor', 'middleware' => 'doctor' ], function() {
+    Route::get('/', function() {
+        return view('doctor.dashboard');
+    });
+    Route::get('/messages', function() {
+        return view('doctor.messages');
+    });
+    Route::get('/raw/{id}', function( $id ){
+        return view('doctor.raw', [
+            'user_id' => $id
+        ]);
+    });
+    Route::get('/classified/{id}', function( $id ) {
+        return view('doctor.classified', [
+            'user_id' => $id
+        ]);
+    });
+});
+
+
+Route::group( [ 'prefix' => 'user', 'middleware' => 'auth' ], function() {
+    Route::get('/', function() {
+        return view('dashboard');
+    });
+
+    Route::get('/history', function() {
+        return view('history');
+    });
+
+    Route::get('/raw', function() {
+        return view('raw');
+    });
+
+    Route::get('/classified', function() {
+        return view('classified');
+    });
+
+    Route::get('/profile', function() {
+        return view('profile');
+    });
+
+    Route::get('/message', 'UserController@message');
+} );
+
+Route::group( [ 'prefix' => 'data' ], function() {
+    Route::post('/', 'RawController@index');
+});
