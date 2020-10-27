@@ -292,7 +292,7 @@ export default function Template(props) {
                         {user.admin ? (
                             <ListItem
                                 button
-                                key={"Doctor Panel"}
+                                key={"Admin Panel"}
                                 onClick={() =>
                                     (window.location.href = "/admin")
                                 }

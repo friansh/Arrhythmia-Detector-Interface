@@ -22,6 +22,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
+
 import { useCookies } from "react-cookie";
 import Axios from "axios";
 import Moment from "react-moment";
@@ -99,202 +101,212 @@ export default function Dashboard(props) {
             setLastClassifiedData(response.data.condition.result);
             setRawDataSummary(response.data.dataSummary);
             setClassifiedDataSummary(response.data.conditionSummary);
+            setLoading(false);
         });
     }, []);
 
-    return (
-        <Template fullName={name}>
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={6} lg={3}>
-                    <Paper className={classes.infoCard}>
-                        <Grid
-                            container
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Grid item>
-                                <Typography
-                                    variant="h5"
-                                    className={classes.infoCardTitle}
-                                    color="primary"
-                                >
-                                    Active User
-                                </Typography>
-                            </Grid>
-                            <Grid item>
-                                <AccountCircleIcon color="secondary" />
-                            </Grid>
-                        </Grid>
-                        <Typography variant="h6">{name}</Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={6} lg={3}>
-                    <Paper className={classes.infoCard}>
-                        <Grid
-                            container
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Grid item>
-                                <Typography
-                                    variant="h5"
-                                    className={classes.infoCardTitle}
-                                    color="primary"
-                                >
-                                    Last Data
-                                </Typography>
-                            </Grid>
-                            <Grid item>
-                                <ListIcon color="secondary" />
-                            </Grid>
-                        </Grid>
-                        <Typography variant="h6">
-                            <Moment>{lastRawData}</Moment>
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={6} lg={3}>
-                    <Paper className={classes.infoCard}>
-                        <Grid
-                            container
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Grid item>
-                                <Typography
-                                    variant="h5"
-                                    className={classes.infoCardTitle}
-                                    color="primary"
-                                >
-                                    Condition
-                                </Typography>
-                            </Grid>
-                            <Grid item>
-                                <DonutLargeIcon color="secondary" />
-                            </Grid>
-                        </Grid>
-                        <Typography variant="h6">
-                            {classify(lastClassifiedData)}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12} md={6} lg={3}>
-                    <Paper className={classes.infoCard}>
-                        <Grid
-                            container
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Grid item>
-                                <Typography
-                                    variant="h5"
-                                    className={classes.infoCardTitle}
-                                    color="primary"
-                                >
-                                    Battery
-                                </Typography>
-                            </Grid>
-                            <Grid item>
-                                <BatteryFullIcon color="secondary" />
-                            </Grid>
-                        </Grid>
-                        <Typography variant="h6">{battery}%</Typography>
-                    </Paper>
-                </Grid>
-            </Grid>
+    const [loading, setLoading] = useState(true);
 
-            <Grid container spacing={3}>
-                <Grid item md={6} xs={12}>
-                    <Paper className={classes.summaryCard}>
-                        <Typography
-                            color="primary"
-                            variant="h5"
-                            className={classes.summaryTitle}
-                        >
-                            Data Summary
-                        </Typography>
-                        <TableContainer component={Paper}>
-                            <Table
-                                className={classes.table}
-                                aria-label="simple table"
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template fullName={name}>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={6} lg={3}>
+                        <Paper className={classes.infoCard}>
+                            <Grid
+                                container
+                                justify="space-between"
+                                alignItems="center"
                             >
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Result</TableCell>
-                                        <TableCell align="right">
-                                            Date and Time
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {rawDataSummary.map(row => (
-                                        <TableRow key={row.id}>
-                                            <TableCell
-                                                component="th"
-                                                scope="row"
-                                            >
-                                                {classify(row.result)}
-                                            </TableCell>
+                                <Grid item>
+                                    <Typography
+                                        variant="h5"
+                                        className={classes.infoCardTitle}
+                                        color="primary"
+                                    >
+                                        Active User
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <AccountCircleIcon color="secondary" />
+                                </Grid>
+                            </Grid>
+                            <Typography variant="h6">{name}</Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={3}>
+                        <Paper className={classes.infoCard}>
+                            <Grid
+                                container
+                                justify="space-between"
+                                alignItems="center"
+                            >
+                                <Grid item>
+                                    <Typography
+                                        variant="h5"
+                                        className={classes.infoCardTitle}
+                                        color="primary"
+                                    >
+                                        Last Data
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <ListIcon color="secondary" />
+                                </Grid>
+                            </Grid>
+                            <Typography variant="h6">
+                                <Moment>{lastRawData}</Moment>
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={3}>
+                        <Paper className={classes.infoCard}>
+                            <Grid
+                                container
+                                justify="space-between"
+                                alignItems="center"
+                            >
+                                <Grid item>
+                                    <Typography
+                                        variant="h5"
+                                        className={classes.infoCardTitle}
+                                        color="primary"
+                                    >
+                                        Condition
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <DonutLargeIcon color="secondary" />
+                                </Grid>
+                            </Grid>
+                            <Typography variant="h6">
+                                {classify(lastClassifiedData)}
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={3}>
+                        <Paper className={classes.infoCard}>
+                            <Grid
+                                container
+                                justify="space-between"
+                                alignItems="center"
+                            >
+                                <Grid item>
+                                    <Typography
+                                        variant="h5"
+                                        className={classes.infoCardTitle}
+                                        color="primary"
+                                    >
+                                        Battery
+                                    </Typography>
+                                </Grid>
+                                <Grid item>
+                                    <BatteryFullIcon color="secondary" />
+                                </Grid>
+                            </Grid>
+                            <Typography variant="h6">{battery}%</Typography>
+                        </Paper>
+                    </Grid>
+                </Grid>
+
+                <Grid container spacing={3}>
+                    <Grid item md={6} xs={12}>
+                        <Paper className={classes.summaryCard}>
+                            <Typography
+                                color="primary"
+                                variant="h5"
+                                className={classes.summaryTitle}
+                            >
+                                Data Summary
+                            </Typography>
+                            <TableContainer component={Paper}>
+                                <Table
+                                    className={classes.table}
+                                    aria-label="simple table"
+                                >
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Result</TableCell>
                                             <TableCell align="right">
-                                                <Moment>
-                                                    {row.created_at}
-                                                </Moment>
+                                                Date and Time
                                             </TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    </Paper>
-                </Grid>
-                <Grid item md={6} xs={12}>
-                    <Paper className={classes.summaryCard}>
-                        <Typography
-                            color="primary"
-                            variant="h5"
-                            className={classes.summaryTitle}
-                        >
-                            Condition Summary
-                        </Typography>
-                        <Doughnut
-                            data={{
-                                labels: [
-                                    "NOR",
-                                    "PVC",
-                                    "PAB",
-                                    "RBB",
-                                    "LBB",
-                                    "APC",
-                                    "VFW",
-                                    "VEB"
-                                ],
-                                datasets: [
-                                    {
-                                        data: classifiedDataSummary,
-                                        backgroundColor: [
-                                            "#00a152",
-                                            "#b28900",
-                                            "#1c54b2",
-                                            "#ab003c",
-                                            "#00a0b2",
-                                            "#ef9a9a",
-                                            "#7e57c2",
-                                            "#2196f3"
-                                        ]
+                                    </TableHead>
+                                    <TableBody>
+                                        {rawDataSummary.map(row => (
+                                            <TableRow key={row.id}>
+                                                <TableCell
+                                                    component="th"
+                                                    scope="row"
+                                                >
+                                                    {classify(row.result)}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    <Moment>
+                                                        {row.created_at}
+                                                    </Moment>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        </Paper>
+                    </Grid>
+                    <Grid item md={6} xs={12}>
+                        <Paper className={classes.summaryCard}>
+                            <Typography
+                                color="primary"
+                                variant="h5"
+                                className={classes.summaryTitle}
+                            >
+                                Condition Summary
+                            </Typography>
+                            <Doughnut
+                                data={{
+                                    labels: [
+                                        "NOR",
+                                        "PVC",
+                                        "PAB",
+                                        "RBB",
+                                        "LBB",
+                                        "APC",
+                                        "VFW",
+                                        "VEB"
+                                    ],
+                                    datasets: [
+                                        {
+                                            data: classifiedDataSummary,
+                                            backgroundColor: [
+                                                "#00a152",
+                                                "#b28900",
+                                                "#1c54b2",
+                                                "#ab003c",
+                                                "#00a0b2",
+                                                "#ef9a9a",
+                                                "#7e57c2",
+                                                "#2196f3"
+                                            ]
+                                        }
+                                    ]
+                                }}
+                                options={{
+                                    legend: {
+                                        position: "bottom"
                                     }
-                                ]
-                            }}
-                            options={{
-                                legend: {
-                                    position: "bottom"
-                                }
-                            }}
-                        />
-                    </Paper>
+                                }}
+                            />
+                        </Paper>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Template>
-    );
+            </Template>
+        );
 }
 
 if (document.getElementById("dashboard")) {

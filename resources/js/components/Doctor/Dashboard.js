@@ -23,6 +23,8 @@ import Moment from "react-moment";
 
 import TextField from "@material-ui/core/TextField";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
+
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
@@ -117,11 +119,13 @@ export default function Dashboard(props) {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setUser(response.data.user);
-            setDoctor(response.data.doctor);
-            setUserCount(response.data.summary.user);
-        });
+        })
+            .then(response => {
+                setUser(response.data.user);
+                setDoctor(response.data.doctor);
+                setUserCount(response.data.summary.user);
+            })
+            .finally(() => setLoading(false));
         Axios.get("/api/abnormal", {
             headers: {
                 Authorization: "Bearer " + cookies.token
@@ -134,216 +138,231 @@ export default function Dashboard(props) {
         });
     }, []);
 
-    return (
-        <Template fullName={name}>
-            <Grid container spacing={2}>
-                <Grid item md={9} style={{ marginBottom: 12 }}>
-                    <Typography variant="h5">
-                        {user.first_name + " " + user.last_name}
-                        <VerifiedUserIcon />
-                    </Typography>
-                    <TableContainer
-                        component={Paper}
-                        style={{ marginBottom: 12 }}
-                    >
-                        <Table
-                            className={classes.table}
-                            size="small"
-                            aria-label="a dense table"
+    const [loading, setLoading] = useState(true);
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template>
+                <Grid container spacing={2}>
+                    <Grid item md={9} style={{ marginBottom: 12 }}>
+                        <Typography variant="h5">
+                            {user.first_name + " " + user.last_name}
+                            <VerifiedUserIcon />
+                        </Typography>
+                        <TableContainer
+                            component={Paper}
+                            style={{ marginBottom: 12 }}
                         >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Parameter</TableCell>
-                                    <TableCell align="right">Data</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">
-                                        Qualification
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {doctor.qualification}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">
-                                        STR Number
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {doctor.str_number}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">
-                                        File Number
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {doctor.file_number}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow key="Berlaku Sampai">
-                                    <TableCell component="th" scope="row">
-                                        Application Date
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Moment format="DD MMMM YYYY">
-                                            {doctor.application_date}
-                                        </Moment>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">
-                                        Valid Until
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        <Moment format="DD MMMM YYYY">
-                                            {doctor.valid_until}
-                                        </Moment>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell component="th" scope="row">
-                                        City/District
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {doctor.city}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                    <Grid container spacing={2}>
-                        <Grid item md={6}>
-                            <Paper>
-                                <Doughnut
-                                    data={{
-                                        labels: ["Normal", "Abnormal"],
-                                        datasets: [
-                                            {
-                                                data: [
-                                                    userCount - abnormalCount,
-                                                    abnormalCount
-                                                ],
-                                                backgroundColor: [
-                                                    "#8bc34a",
-                                                    "#ff5722"
-                                                ]
-                                            }
-                                        ]
-                                    }}
-                                    options={{
-                                        legend: {
-                                            position: "bottom"
-                                        },
-                                        title: {
-                                            display: true,
-                                            position: "top",
-                                            text: "User Condition Summary"
-                                        }
-                                    }}
-                                />
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Paper component={Paper} style={{ padding: 12 }}>
-                                <Typography
-                                    variant="h6"
-                                    style={{ marginBottom: 5 }}
-                                >
-                                    <SearchIcon /> Search for user classified
-                                    data
-                                </Typography>
-
-                                <Grid container spacing={1}>
-                                    <Grid item lg={6}>
-                                        <TextField
-                                            label="First Name"
-                                            onChange={event =>
-                                                firstNameChange(event)
-                                            }
-                                            variant="outlined"
-                                        />
-                                    </Grid>
-                                    <Grid item lg={6}>
-                                        <TextField
-                                            label="Last Name"
-                                            onChange={event =>
-                                                lastNameChange(event)
-                                            }
-                                            variant="outlined"
-                                        />
-                                    </Grid>
-                                </Grid>
-
-                                <List
-                                    component="nav"
-                                    className={classes.root}
-                                    aria-label="contacts"
-                                >
-                                    {usersFound.map(data => (
-                                        <ListItem
-                                            button
-                                            key={data.id}
-                                            onClick={() =>
-                                                (window.location.href =
-                                                    "/doctor/classified/" +
-                                                    data.id)
-                                            }
-                                        >
-                                            <ListItemIcon>
-                                                <AccountBoxIcon />
-                                            </ListItemIcon>
-                                            <ListItemText
-                                                primary={
-                                                    data.first_name +
-                                                    " " +
-                                                    data.last_name
+                            <Table
+                                className={classes.table}
+                                size="small"
+                                aria-label="a dense table"
+                            >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Parameter</TableCell>
+                                        <TableCell align="right">
+                                            Data
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell component="th" scope="row">
+                                            Qualification
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {doctor.qualification}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell component="th" scope="row">
+                                            STR Number
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {doctor.str_number}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell component="th" scope="row">
+                                            File Number
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {doctor.file_number}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow key="Berlaku Sampai">
+                                        <TableCell component="th" scope="row">
+                                            Application Date
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Moment format="DD MMMM YYYY">
+                                                {doctor.application_date}
+                                            </Moment>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell component="th" scope="row">
+                                            Valid Until
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Moment format="DD MMMM YYYY">
+                                                {doctor.valid_until}
+                                            </Moment>
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell component="th" scope="row">
+                                            City/District
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            {doctor.city}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <Grid container spacing={2}>
+                            <Grid item md={6}>
+                                <Paper>
+                                    <Doughnut
+                                        data={{
+                                            labels: ["Normal", "Abnormal"],
+                                            datasets: [
+                                                {
+                                                    data: [
+                                                        userCount -
+                                                            abnormalCount,
+                                                        abnormalCount
+                                                    ],
+                                                    backgroundColor: [
+                                                        "#8bc34a",
+                                                        "#ff5722"
+                                                    ]
                                                 }
+                                            ]
+                                        }}
+                                        options={{
+                                            legend: {
+                                                position: "bottom"
+                                            },
+                                            title: {
+                                                display: true,
+                                                position: "top",
+                                                text: "User Condition Summary"
+                                            }
+                                        }}
+                                    />
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Paper
+                                    component={Paper}
+                                    style={{ padding: 12 }}
+                                >
+                                    <Typography
+                                        variant="h6"
+                                        style={{ marginBottom: 5 }}
+                                    >
+                                        <SearchIcon /> Search for user
+                                        classified data
+                                    </Typography>
+
+                                    <Grid container spacing={1}>
+                                        <Grid item lg={6}>
+                                            <TextField
+                                                label="First Name"
+                                                onChange={event =>
+                                                    firstNameChange(event)
+                                                }
+                                                variant="outlined"
                                             />
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Paper>
+                                        </Grid>
+                                        <Grid item lg={6}>
+                                            <TextField
+                                                label="Last Name"
+                                                onChange={event =>
+                                                    lastNameChange(event)
+                                                }
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+                                    </Grid>
+
+                                    <List
+                                        component="nav"
+                                        className={classes.root}
+                                        aria-label="contacts"
+                                    >
+                                        {usersFound.map(data => (
+                                            <ListItem
+                                                button
+                                                key={data.id}
+                                                onClick={() =>
+                                                    (window.location.href =
+                                                        "/doctor/classified/" +
+                                                        data.id)
+                                                }
+                                            >
+                                                <ListItemIcon>
+                                                    <AccountBoxIcon />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    primary={
+                                                        data.first_name +
+                                                        " " +
+                                                        data.last_name
+                                                    }
+                                                />
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </Paper>
+                            </Grid>
                         </Grid>
                     </Grid>
-                </Grid>
-                <Grid
-                    item
-                    xs={12}
-                    md={3}
-                    component={Paper}
-                    style={{ padding: 12 }}
-                >
-                    <Typography
-                        variant="h6"
-                        align="center"
-                        style={{ marginBottom: 6 }}
+                    <Grid
+                        item
+                        xs={12}
+                        md={3}
+                        component={Paper}
+                        style={{ padding: 12 }}
                     >
-                        Help
-                    </Typography>
-                    <Typography component="span" variant="body2">
-                        Doctor roles can do this action:
-                        <ul>
-                            <li>
-                                See raw ECG data from a user in abnormal data
-                                table
-                            </li>
-                            <li>
-                                See classified ECG data from a user in abnormal
-                                data table
-                            </li>
-                            <li>Search for all user classified ECG data</li>
-                            <li>
-                                Get notification for user that has abnormal ECG
-                                data
-                            </li>
-                        </ul>
-                    </Typography>
+                        <Typography
+                            variant="h6"
+                            align="center"
+                            style={{ marginBottom: 6 }}
+                        >
+                            Help
+                        </Typography>
+                        <Typography component="span" variant="body2">
+                            Doctor roles can do this action:
+                            <ul>
+                                <li>
+                                    See raw ECG data from a user in abnormal
+                                    data table
+                                </li>
+                                <li>
+                                    See classified ECG data from a user in
+                                    abnormal data table
+                                </li>
+                                <li>Search for all user classified ECG data</li>
+                                <li>
+                                    Get notification for user that has abnormal
+                                    ECG data
+                                </li>
+                            </ul>
+                        </Typography>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Template>
-    );
+            </Template>
+        );
 }
 
 if (document.getElementById("doctor-dashboard")) {

@@ -35,8 +35,11 @@ Route::group( [ 'middleware' => 'doctor:api' ], function() {
 
 Route::group( [ 'middleware' => 'admin:api', 'prefix' => 'admin' ], function() {
     Route::get('/dashboard', 'UserController@adminDashboard');
+    Route::get('/doctor', 'UserController@indexDoctor');
     Route::post('/promote', 'UserController@promote');
     Route::get('/applicant', 'UserController@indexDoctorApplicant');
+    Route::get('/user/{id}', 'UserController@show');
+    Route::get('/doctor/{id}', 'UserController@showDoctor');
 });
 
 Route::post( '/login', 'UserController@login' );

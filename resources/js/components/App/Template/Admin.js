@@ -231,7 +231,7 @@ export default function Template(props) {
                         <ListItem
                             button
                             onClick={() =>
-                                (window.location.href = "/admin/promote")
+                                (window.location.href = "/admin/manage/user")
                             }
                         >
                             <ListItemIcon>
@@ -242,7 +242,7 @@ export default function Template(props) {
                         <ListItem
                             button
                             onClick={() =>
-                                (window.location.href = "/admin/promote")
+                                (window.location.href = "/admin/manage/doctor")
                             }
                         >
                             <ListItemIcon>

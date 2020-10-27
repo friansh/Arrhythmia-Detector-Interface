@@ -22,6 +22,8 @@ require("./components/Doctor/Messages");
 
 require("./components/Admin/Dashboard");
 require("./components/Admin/Promote");
+require("./components/Admin/ManageUser");
+require("./components/Admin/ManageDoctor");
 
 require("./components/User/History");
 require("./components/User/Raw");

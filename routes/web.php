@@ -40,6 +40,12 @@ Route::group( ['prefix' => 'admin'], function() {
     Route::get('/promote', function() {
         return view('admin.promote');
     });
+    Route::get('/manage/user', function() {
+        return view('admin.manageuser');
+    });
+    Route::get('/manage/doctor', function() {
+        return view('admin.managedoctor');
+    });
 
 } );
 

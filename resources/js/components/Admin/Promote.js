@@ -21,6 +21,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import CheckIcon from "@material-ui/icons/Check";
+import ClearIcon from "@material-ui/icons/Clear";
+
 import Axios from "axios";
 
 export default function Promote(props) {
@@ -128,17 +131,11 @@ export default function Promote(props) {
                                                     })
                                                 }
                                             >
-                                                Verify
+                                                <CheckIcon />
                                             </Button>
-                                            {/* <Button
-                                                onClick={() =>
-                                                    (window.location.href =
-                                                        "/doctor/classified/" +
-                                                        row.user.id)
-                                                }
-                                            >
-                                                Classifieds
-                                            </Button> */}
+                                            <Button color="secondary">
+                                                <ClearIcon />
+                                            </Button>
                                         </ButtonGroup>
                                     </TableCell>
                                 </TableRow>
@@ -150,8 +147,6 @@ export default function Promote(props) {
             <Dialog
                 open={open}
                 onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">Are you sure?</DialogTitle>
                 <DialogContent>

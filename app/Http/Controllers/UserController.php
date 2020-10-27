@@ -101,6 +101,10 @@ class UserController extends Controller
             return User::all();
     }
 
+    public function indexDoctor() {
+        $applicant = Doctor::where('verified', true)->with('user')->get();
+        return response()->json(['status' => true, 'data' => $applicant]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -130,7 +134,12 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json( User::find($id) );
+    }
+
+    public function showDoctor($id)
+    {
+        return response()->json( User::find($id)->doctor()->first() );
     }
 
     /**
