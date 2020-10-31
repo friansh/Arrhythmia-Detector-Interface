@@ -4,6 +4,7 @@ import Template from "../App/Template/User";
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 import { Line } from "react-chartjs-2";
 import Axios from "axios";
@@ -41,16 +42,18 @@ export default function Raw() {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            let rawData = [];
-            let rawTime = [];
-            response.data.map(d => {
-                rawData.push(d.data);
-                rawTime.push(moment(d.created_at).format("h:mm:ss"));
-            });
-            setYChart(rawData);
-            setXChart(rawTime);
-        });
+        })
+            .then(response => {
+                let rawData = [];
+                let rawTime = [];
+                response.data.map(d => {
+                    rawData.push(d.data);
+                    rawTime.push(moment(d.created_at).format("h:mm:ss"));
+                });
+                setYChart(rawData);
+                setXChart(rawTime);
+            })
+            .finally(loadDone);
     }, []);
 
     // setTimeout(
@@ -71,9 +74,22 @@ export default function Raw() {
     //     1000
     // );
 
-    return (
-        <Template title={"Raw Data"}>
-            {/* <Typography variant="h4">User Raw Data</Typography>
+    const [loading, setLoading] = useState(true);
+
+    const loadDone = () => {
+        setLoading(false);
+    };
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title={"Raw Data"}>
+                {/* <Typography variant="h4">User Raw Data</Typography>
             <Paper style={{ padding: 12, marginBottom: 12 }}>
                 <Breadcrumbs aria-label="breadcrumb">
                     <Link color="inherit" href="/user">
@@ -82,46 +98,46 @@ export default function Raw() {
                     <Typography color="textPrimary">User Raw Data</Typography>
                 </Breadcrumbs>
             </Paper> */}
-            <Paper style={{ padding: 12 }}>
-                <Line
-                    data={{
-                        labels: xChart,
-                        datasets: [
-                            {
-                                data: yChart,
-                                lineTension: 0,
-                                borderColor: "#ba000d",
-                                fill: false
+                <Paper style={{ padding: 12 }}>
+                    <Line
+                        data={{
+                            labels: xChart,
+                            datasets: [
+                                {
+                                    data: yChart,
+                                    lineTension: 0,
+                                    borderColor: "#ba000d",
+                                    fill: false
+                                }
+                            ]
+                        }}
+                        options={{
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: "ECG Raw Data History"
+                            },
+                            // scales: {
+                            //     xAxes: [
+                            //         {
+                            //             ticks: {
+                            //                 display: false
+                            //             }
+                            //         }
+                            //     ]
+                            // },
+                            elements: {
+                                point: {
+                                    radius: 0
+                                }
                             }
-                        ]
-                    }}
-                    options={{
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: "ECG Raw Data History"
-                        },
-                        // scales: {
-                        //     xAxes: [
-                        //         {
-                        //             ticks: {
-                        //                 display: false
-                        //             }
-                        //         }
-                        //     ]
-                        // },
-                        elements: {
-                            point: {
-                                radius: 0
-                            }
-                        }
-                    }}
-                />
-            </Paper>
-        </Template>
-    );
+                        }}
+                    />
+                </Paper>
+            </Template>
+        );
 }
 
 if (document.getElementById("raw")) {

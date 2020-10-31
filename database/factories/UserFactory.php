@@ -22,8 +22,6 @@ $factory->define(User::class, function (Faker $faker) {
         'email' => $faker->unique()->safeEmail,
         'birthday' => $faker->dateTime(),
         'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-        'api_token' => Str::random(256),
-        'api_token_generated' => time(),
         'first_name' => $faker->firstName(),
         'last_name'=> $faker->lastName(),
         'address'=> $faker->address(),

@@ -84,10 +84,13 @@ export default function ManageDoctor(props) {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setDoctor(response.data.data);
-            setLoading(false);
-        });
+        })
+            .then(response => {
+                setDoctor(response.data.data);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
     if (loading)
@@ -176,8 +179,8 @@ export default function ManageDoctor(props) {
                     <DialogTitle>Are you sure?</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            You are going to invoke {doctorDelete.name} doctor
-                            status. This action is irreversible.
+                            You are going to invoke {doctorDelete.name}&apos;s
+                            doctor status. This action is irreversible.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

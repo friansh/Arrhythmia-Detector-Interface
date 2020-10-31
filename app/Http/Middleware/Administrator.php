@@ -16,7 +16,7 @@ class Administrator extends Middleware
      * @return mixed
      */
     public function handle($request, Closure $next, ...$guards)
-    {
+    {   
         $this->authenticate($request, $guards);
 
         if ( Auth::user()->admin )

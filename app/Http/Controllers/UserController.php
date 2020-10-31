@@ -160,9 +160,46 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request )
     {
-        //
+        $validator = Validator::make( $request->all(), [
+            'birthday' => 'required|date',
+            'first_name' => 'required|max:20',
+            'last_name' => 'required|max:50',
+            'address' => 'required|max:200',
+            'zip_code' => 'required|gte:0|integer',
+            'city' => 'required',
+            'province' => 'required',
+            'country' => 'required',
+        ]);
+
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+
+        $user = User::find(auth()->id());
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->address = $request->address;
+        $user->zip_code = $request->zip_code;
+        $user->city = $request->city;
+        $user->province = $request->province;
+        $user->country = $request->country;
+
+        $birthday = new \DateTime($request->birthday);
+        $user->birthday = $birthday->format('Y-m-d H:i:s');
+
+        if ( $user->save() ) 
+            return response()->json( [
+                'status' => true,
+            ]);
+        else 
+            return response()->json( [
+                'status' => false,
+                'message' => 'Failed to save.'
+            ]);
     }
 
     /**
@@ -174,37 +211,6 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function login( Request $request ) {
-        $validator = Validator::make( $request->all(), [
-            'email' => 'required',
-            'password' => 'required'
-        ]);
-
-        if ($validator->fails()) 
-            return response()->json( [
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
-
-        $credentials = $request->only('email', 'password');
-        if ( Auth::attempt( $credentials ) ) 
-            return response()->json( [ 
-                'status' => true,
-                'message' => 'Logged in.',
-                'token' => User::find( Auth::id() )->api_token
-            ] );
-        else
-            return response()->json( [ 
-                'status' => false,
-                'message' => 'Incorrect credential.'
-            ] );
-    }
-
-    public function logout() {
-        Auth::logout();
-        return redirect(route('landing'));
     }
 
     public function register( Request $request ) {
@@ -229,7 +235,6 @@ class UserController extends Controller
 
         $user = new User;
         $user->password = Hash::make($request->password);
-        $user->api_token = Str::random(256);
         $user->email = $request->email;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
@@ -238,7 +243,6 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->province = $request->province;
         $user->country = $request->country;
-        $user->api_token_generated = time();
 
         $birthday = new \DateTime($request->birthday);
         $user->birthday = $birthday->format('Y-m-d H:i:s');

@@ -88,7 +88,7 @@ export default function Cust_Table(props) {
                                                 onClick={() =>
                                                     (window.location.href =
                                                         props.button[1].link +
-                                                        row.user.id)
+                                                        row.id)
                                                 }
                                             >
                                                 {props.button[1].text}

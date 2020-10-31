@@ -14,9 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    // Route::post('me', 'AuthController@me');
 });
+
+// Route::middleware('auth')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::group( [ 'prefix' => 'data', 'middleware' => 'auth:api' ], function() {
     Route::get('/dashboard', 'UserController@userDashboard');
@@ -24,8 +31,9 @@ Route::group( [ 'prefix' => 'data', 'middleware' => 'auth:api' ], function() {
     Route::get('/raw', 'RawController@index');
 });
 
-Route::group( [ 'middleware' => 'doctor:api' ], function() {
+Route::group( [ 'middleware' => 'doctor' ], function() {
     Route::get('/user', 'UserController@index');
+    Route::patch('/user', 'UserController@update');
     Route::post('/user/search', 'UserController@search');
     Route::get('/data/raw/{id}', 'RawController@showUser');
     Route::get('/data/classified/{id}', 'ClassifiedController@showUser');
@@ -33,7 +41,7 @@ Route::group( [ 'middleware' => 'doctor:api' ], function() {
     Route::get('/doctor/dashboard', 'UserController@doctorDashboard');
 });
 
-Route::group( [ 'middleware' => 'admin:api', 'prefix' => 'admin' ], function() {
+Route::group( [ 'middleware' => 'admin', 'prefix' => 'admin' ], function() {
     Route::get('/dashboard', 'UserController@adminDashboard');
     Route::get('/doctor', 'UserController@indexDoctor');
     Route::post('/promote', 'UserController@promote');
@@ -42,8 +50,8 @@ Route::group( [ 'middleware' => 'admin:api', 'prefix' => 'admin' ], function() {
     Route::get('/doctor/{id}', 'UserController@showDoctor');
 });
 
-Route::post( '/login', 'UserController@login' );
 Route::post( '/register', 'UserController@register' );
-Route::get( '/active', 'UserController@active' )->middleware('auth:api');
-Route::get( '/device', 'DeviceController@index' )->middleware('auth:api');
-Route::post( '/device/refresh', 'DeviceController@refreshToken' )->middleware('auth:api');
+Route::get( '/active', 'UserController@active' )->middleware('auth');
+Route::get( '/device', 'DeviceController@index' )->middleware('auth');
+Route::post( '/device/refresh', 'DeviceController@refreshToken' )->middleware('auth');
+Route::put('/classifier', 'ClassifiedController@store');

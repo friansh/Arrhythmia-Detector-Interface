@@ -126,6 +126,7 @@ export default function ManageUser(props) {
                                     <TableCell>First Name</TableCell>
                                     <TableCell>Last Name</TableCell>
                                     <TableCell>Birthday</TableCell>
+                                    <TableCell>Email</TableCell>
                                     <TableCell align="right">Address</TableCell>
                                     <TableCell>Action</TableCell>
                                 </TableRow>
@@ -140,6 +141,7 @@ export default function ManageUser(props) {
                                         <TableCell>
                                             {row.birthday.split(" ")[0]}
                                         </TableCell>
+                                        <TableCell>{row.email}</TableCell>
                                         <TableCell align="right">
                                             {row.address}
                                         </TableCell>

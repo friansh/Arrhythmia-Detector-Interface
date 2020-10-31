@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Classified;
+use App\Events\AnomalyDetected;
 use App\User;
 
 class ClassifiedController extends Controller
@@ -33,7 +35,7 @@ class ClassifiedController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -44,7 +46,33 @@ class ClassifiedController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make( $request->all(), [
+            'user_id' => 'required|integer|gte:0',
+            'result' => 'required|integer|gte:0|lte:8'
+        ]);
+
+        if ($validation->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validation->errors()
+            ]);
+
+        $u = User::find ( $request->user_id );
+
+        if ($request->result > 0){
+            event( new AnomalyDetected( [
+                'user' => $u,
+                'result' => $request->result
+            ]) );
+        }
+
+        $c = new Classified;
+        $c->result = $request->result;
+        
+        if ( $u->classifieds()->save($c) )
+            return response()->json(['status' => true ]);
+        else
+            return response()->json(['status' => false, 'message' => 'Server error' ], 500);
     }
 
     /**

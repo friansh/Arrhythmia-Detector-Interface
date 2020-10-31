@@ -33,6 +33,11 @@ import SearchIcon from "@material-ui/icons/Search";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 
+import Snackbar from "@material-ui/core/Snackbar";
+import MuiAlert from "@material-ui/lab/Alert";
+
+import Classify from "../App/Classify";
+
 const useStyles = makeStyles(theme => ({
     table: {},
     infoCard: {
@@ -114,6 +119,28 @@ export default function Dashboard(props) {
 
     const [usersFound, setUsersFound] = useState([]);
 
+    function getAbnormal() {
+        Axios.get("/api/abnormal", {
+            headers: {
+                Authorization: "Bearer " + cookies.token
+            },
+            params: {
+                count: 1
+            }
+        }).then(response => {
+            setAbnormalCount(response.data.data.count);
+        });
+    }
+
+    const notifSound = new Audio("/sound/notification.wav");
+    const [anomalyDetected, setAnomalyDetected] = useState({
+        result: null,
+        user: {
+            first_name: null,
+            last_name: null
+        }
+    });
+
     useEffect(() => {
         Axios.get("api/doctor/dashboard", {
             headers: {
@@ -126,17 +153,25 @@ export default function Dashboard(props) {
                 setUserCount(response.data.summary.user);
             })
             .finally(() => setLoading(false));
-        Axios.get("/api/abnormal", {
-            headers: {
-                Authorization: "Bearer " + cookies.token
-            },
-            params: {
-                count: 1
-            }
-        }).then(response => {
-            setAbnormalCount(response.data.data.count);
+
+        getAbnormal();
+
+        Echo.private("classified-anomaly").listen(".detected", e => {
+            setAnomalyDetected(e);
+            notifSound.play();
+            setOpen(true);
         });
     }, []);
+
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = (event, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+
+        setOpen(false);
+    };
 
     const [loading, setLoading] = useState(true);
 
@@ -361,6 +396,26 @@ export default function Dashboard(props) {
                         </Typography>
                     </Grid>
                 </Grid>
+                <Snackbar
+                    open={open}
+                    autoHideDuration={60000}
+                    onClose={handleClose}
+                >
+                    <MuiAlert
+                        elevation={6}
+                        variant="filled"
+                        onClose={handleClose}
+                        severity="error"
+                    >
+                        Arrythmia type{" "}
+                        {Classify(parseInt(anomalyDetected.result))} detected on
+                        user{" "}
+                        {anomalyDetected.user.first_name +
+                            " " +
+                            anomalyDetected.user.last_name}
+                        ! Click the message icon to see the details.
+                    </MuiAlert>
+                </Snackbar>
             </Template>
         );
 }

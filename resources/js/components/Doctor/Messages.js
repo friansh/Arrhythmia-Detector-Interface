@@ -63,7 +63,7 @@ export default function Messages() {
                     data={classifiedData}
                     button={[
                         { text: "Raw", link: "/doctor/raw/" },
-                        { text: "Classifieds", link: "/doctor/raw/" }
+                        { text: "Classifieds", link: "/doctor/classified/" }
                     ]}
                     columns={["Name", "Result", "Date and Time", "View"]}
                 />

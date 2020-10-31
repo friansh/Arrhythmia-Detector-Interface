@@ -128,11 +128,6 @@ export default function Template(props) {
         setAnchorEl(null);
     };
 
-    const handleLogout = () => {
-        setAnchorEl(null);
-        window.location.href = "/logout";
-    };
-
     const [user, setUser] = useState({
         first_name: null,
         last_name: null,
@@ -142,16 +137,34 @@ export default function Template(props) {
     const [doctor, setDoctor] = useState(null);
     const [cookies, setCookie] = useCookies();
 
+    const redirectLogin = () => {
+        window.location.replace("/login");
+    };
+
     useEffect(() => {
         Axios.get("/api/active", {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setUser(response.data.user);
-            setDoctor(response.data.doctor);
-        });
+        })
+            .then(response => {
+                setUser(response.data.user);
+                setDoctor(response.data.doctor);
+            })
+            .catch(redirectLogin);
     }, []);
+
+    const logout = () => {
+        Axios.post(
+            "/api/auth/logout",
+            {},
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(redirectLogin);
+    };
 
     return (
         <CookiesProvider>
@@ -195,7 +208,7 @@ export default function Template(props) {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                            <MenuItem onClick={logout}>Logout</MenuItem>
                         </Menu>
                     </Toolbar>
                 </AppBar>
@@ -275,7 +288,7 @@ export default function Template(props) {
                     <Divider />
 
                     <List>
-                        {doctor != null ? (
+                        {doctor != null && doctor.verified ? (
                             <ListItem
                                 button
                                 key={"Doctor Panel"}

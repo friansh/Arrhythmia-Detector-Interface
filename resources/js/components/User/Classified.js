@@ -13,6 +13,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
+
 import Moment from "react-moment";
 
 import Axios from "axios";
@@ -46,18 +48,33 @@ export default function Classified() {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setClassifiedData(response.data);
-        });
+        })
+            .then(response => {
+                setClassifiedData(response.data);
+            })
+            .finally(loadDone);
     }, []);
 
-    return (
-        <Template title={"Classifier Result"}>
-            <Paper style={{ padding: 12 }}>
-                <Cust_Table column={2} data={classifiedData} />
-            </Paper>
-        </Template>
-    );
+    const [loading, setLoading] = useState(true);
+
+    const loadDone = () => {
+        setLoading(false);
+    };
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title={"Classifier Result"}>
+                <Paper style={{ padding: 12 }}>
+                    <Cust_Table column={2} data={classifiedData} />
+                </Paper>
+            </Template>
+        );
 }
 
 if (document.getElementById("classified")) {

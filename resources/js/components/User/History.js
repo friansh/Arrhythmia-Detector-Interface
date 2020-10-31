@@ -4,12 +4,14 @@ import Template from "../App/Template/User";
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import { useCookies } from "react-cookie";
 import Axios from "axios";
+import Classify from "../App/Classify";
 
 const useStyles = makeStyles(theme => ({
     infoCard: {
@@ -32,38 +34,6 @@ export default function History() {
     const theme = useTheme();
 
     const [cookies, setCookie] = useCookies();
-
-    function classify(num) {
-        switch (num) {
-            case 0:
-                return "Normal (NOR)";
-
-            case 1:
-                return "Premature Ventricular Contraction Beat (PVC)";
-
-            case 2:
-                return "Paced Beat (PAB)";
-
-            case 3:
-                return "Right Bundle Branch Block Beat (RBB)";
-
-            case 4:
-                return "Left Bundle Branch Block Beat (LBB)";
-
-            case 5:
-                return "Atrial Premature Contraction Beat (APC)";
-
-            case 6:
-                return "Ventricular Flutter Wave (VFW)";
-
-            case 7:
-                return "Premature Ventricular Contraction Beat (VEB)";
-
-            default:
-                return "Unknown";
-        }
-    }
-
     const [events, setEvents] = useState([
         {
             id: 11,
@@ -78,22 +48,25 @@ export default function History() {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            let eventBuffer = [];
-            response.data.map(data => {
-                let startTime = new Date(data.created_at);
-                startTime.setHours(startTime.getHours() - 1);
-                eventBuffer.push({
-                    id: data.id,
-                    title: classify(data.result),
-                    start: 0,
-                    start: startTime,
-                    end: new Date(data.created_at)
+        })
+            .then(response => {
+                let eventBuffer = [];
+                response.data.map(data => {
+                    if (data.result != 0) {
+                        let startTime = new Date(data.created_at);
+                        startTime.setHours(startTime.getHours() - 1);
+                        eventBuffer.push({
+                            id: data.id,
+                            title: Classify(data.result),
+                            start: startTime,
+                            end: new Date(data.created_at)
+                        });
+                    }
                 });
-            });
-            console.log(eventBuffer);
-            setEvents(eventBuffer);
-        });
+                console.log(eventBuffer);
+                setEvents(eventBuffer);
+            })
+            .finally(loadDone);
     }, []);
 
     // const events = [
@@ -125,19 +98,32 @@ export default function History() {
 
     const localizer = momentLocalizer(moment);
 
-    return (
-        <Template title={"Detection History"}>
-            <Paper style={{ padding: 12 }}>
-                <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 500 }}
-                />
-            </Paper>
-        </Template>
-    );
+    const [loading, setLoading] = useState(true);
+
+    const loadDone = () => {
+        setLoading(false);
+    };
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title={"Detection History"}>
+                <Paper style={{ padding: 12 }}>
+                    <Calendar
+                        localizer={localizer}
+                        events={events}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{ height: 500 }}
+                    />
+                </Paper>
+            </Template>
+        );
 }
 
 if (document.getElementById("history")) {

@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 import Breadcrumbs from "@material-ui/core/Breadcrumbs";
 import Link from "@material-ui/core/Link";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
 import moment from "moment";
 
 const useStyles = makeStyles(theme => ({
@@ -47,85 +48,102 @@ export default function Raw(props) {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            let rawData = [];
-            let rawTime = [];
-            response.data.data.map(d => {
-                rawData.push(d.data);
-                rawTime.push(moment(d.created_at).format("h:mm:ss"));
-            });
-            setPatientName(
-                response.data.user.first_name +
-                    " " +
-                    response.data.user.last_name
-            );
-            setPatientAddress(
-                response.data.user.address +
-                    " " +
-                    response.data.user.city +
-                    " " +
-                    response.data.user.province +
-                    " " +
-                    response.data.user.country
-            );
-            setYChart(rawData);
-            setXChart(rawTime);
-        });
+        })
+            .then(response => {
+                let rawData = [];
+                let rawTime = [];
+                response.data.data.map(d => {
+                    rawData.push(d.data);
+                    rawTime.push(moment(d.created_at).format("h:mm:ss"));
+                });
+                setPatientName(
+                    response.data.user.first_name +
+                        " " +
+                        response.data.user.last_name
+                );
+                setPatientAddress(
+                    response.data.user.address +
+                        " " +
+                        response.data.user.city +
+                        " " +
+                        response.data.user.province +
+                        " " +
+                        response.data.user.country
+                );
+                setYChart(rawData);
+                setXChart(rawTime);
+            })
+            .finally(loadDone);
     }, []);
 
-    return (
-        <Template title={"Raw Data"}>
-            <Typography
-                variant="h4"
-                align={"center"}
-                style={{ marginBottom: 12 }}
-            >
-                User Raw Data
-            </Typography>
-            <Paper style={{ padding: 12, marginBottom: 12 }}>
-                <Typography variant="h5">{patientName}</Typography>
-                <Typography variant="subtitle2">{patientAddress}</Typography>
-            </Paper>
-            <Paper style={{ padding: 12 }}>
-                <Line
-                    data={{
-                        labels: xChart,
-                        datasets: [
-                            {
-                                data: yChart,
-                                lineTension: 0,
-                                borderColor: "#ba000d",
-                                fill: false
+    const [loading, setLoading] = useState(true);
+
+    const loadDone = () => {
+        setLoading(false);
+    };
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title={"Raw Data"}>
+                <Typography
+                    variant="h4"
+                    align={"center"}
+                    style={{ marginBottom: 12 }}
+                >
+                    User Raw Data
+                </Typography>
+                <Paper style={{ padding: 12, marginBottom: 12 }}>
+                    <Typography variant="h5">{patientName}</Typography>
+                    <Typography variant="subtitle2">
+                        {patientAddress}
+                    </Typography>
+                </Paper>
+                <Paper style={{ padding: 12 }}>
+                    <Line
+                        data={{
+                            labels: xChart,
+                            datasets: [
+                                {
+                                    data: yChart,
+                                    lineTension: 0,
+                                    borderColor: "#ba000d",
+                                    fill: false
+                                }
+                            ]
+                        }}
+                        options={{
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: "ECG Raw Data History"
+                            },
+                            // scales: {
+                            //     xAxes: [
+                            //         {
+                            //             ticks: {
+                            //                 display: false
+                            //             }
+                            //         }
+                            //     ]
+                            // },
+                            elements: {
+                                point: {
+                                    radius: 0
+                                }
                             }
-                        ]
-                    }}
-                    options={{
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: "ECG Raw Data History"
-                        },
-                        // scales: {
-                        //     xAxes: [
-                        //         {
-                        //             ticks: {
-                        //                 display: false
-                        //             }
-                        //         }
-                        //     ]
-                        // },
-                        elements: {
-                            point: {
-                                radius: 0
-                            }
-                        }
-                    }}
-                />
-            </Paper>
-        </Template>
-    );
+                        }}
+                    />
+                </Paper>
+            </Template>
+        );
 }
 
 let doctorRaw = document.getElementById("doctor-raw");

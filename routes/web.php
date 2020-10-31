@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,6 @@ Route::group( [ 'prefix' => 'login' ], function() {
     Route::get('/', function() {
         return view('login');
     })->name('login')->middleware('guest');
-    Route::post('/', 'UserController@login');
 });
 
 Route::group( [ 'prefix' => 'register' ], function() { 
@@ -30,8 +30,6 @@ Route::group( [ 'prefix' => 'register' ], function() {
     });
     Route::post('/', 'UserController@register');
 });
-
-Route::get( '/logout', 'UserController@logout' );
 
 Route::group( ['prefix' => 'admin'], function() {
     Route::get('/', function() {
@@ -49,7 +47,7 @@ Route::group( ['prefix' => 'admin'], function() {
 
 } );
 
-Route::group( [ 'prefix' => 'doctor', 'middleware' => 'doctor' ], function() {
+Route::group( [ 'prefix' => 'doctor' ], function() {
     Route::get('/', function() {
         return view('doctor.dashboard');
     });
@@ -69,7 +67,7 @@ Route::group( [ 'prefix' => 'doctor', 'middleware' => 'doctor' ], function() {
 });
 
 
-Route::group( [ 'prefix' => 'user', 'middleware' => 'auth' ], function() {
+Route::group( [ 'prefix' => 'user' ], function() {
     Route::get('/', function() {
         return view('dashboard');
     });

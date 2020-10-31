@@ -17,7 +17,6 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import MailIcon from "@material-ui/icons/Mail";
 
-import LocalHospitalIcon from "@material-ui/icons/LocalHospital";
 import FaceIcon from "@material-ui/icons/Face";
 
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
@@ -131,11 +130,6 @@ export default function Template(props) {
         setAnchorEl(null);
     };
 
-    const handleLogout = () => {
-        setAnchorEl(null);
-        window.location.href = "/logout";
-    };
-
     const [abnormalCount, setAbnormalCount] = useState();
     const [user, setUser] = useState({
         first_name: null,
@@ -143,14 +137,20 @@ export default function Template(props) {
         role: 0
     });
 
+    const redirectLogin = () => {
+        window.location.replace("/login");
+    };
+
     useEffect(() => {
         Axios.get("/api/active", {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setUser(response.data.user);
-        });
+        })
+            .then(response => {
+                setUser(response.data.user);
+            })
+            .catch(redirectLogin);
 
         Axios.get("/api/abnormal", {
             headers: {
@@ -159,10 +159,24 @@ export default function Template(props) {
             params: {
                 count: 1
             }
-        }).then(response => {
-            setAbnormalCount(response.data.data.count);
-        });
+        })
+            .then(response => {
+                setAbnormalCount(response.data.data.count);
+            })
+            .catch(redirectLogin);
     }, []);
+
+    const logout = () => {
+        Axios.post(
+            "/api/auth/logout",
+            {},
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(redirectLogin);
+    };
 
     return (
         <CookiesProvider>
@@ -173,7 +187,7 @@ export default function Template(props) {
                     className={clsx(classes.appBar, {
                         [classes.appBarShift]: open
                     })}
-                    style={{ background: "#f44336" }}
+                    style={{ background: "#6d1b7b" }}
                 >
                     <Toolbar>
                         <IconButton
@@ -208,7 +222,7 @@ export default function Template(props) {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                         >
-                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                            <MenuItem onClick={logout}>Logout</MenuItem>
                         </Menu>
                     </Toolbar>
                 </AppBar>

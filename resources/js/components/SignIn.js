@@ -5,7 +5,6 @@ import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -18,6 +17,7 @@ import { CookiesProvider, useCookies } from "react-cookie";
 
 import Snackbar from "@material-ui/core/Snackbar";
 import MuiAlert from "@material-ui/lab/Alert";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 function Copyright() {
     return (
@@ -71,39 +71,41 @@ export default function SignIn() {
         setPassword(event.target.value);
     }
 
+    const [loading, setLoading] = useState(false);
+
     function submit(event) {
         event.preventDefault();
-        Axios.post("/login", {
+        setLoading(true);
+        Axios.post("/api/auth/login", {
             email: email,
             password: password
         })
             .then(function(response) {
                 console.log(response.data);
-                if (response.data.status) {
-                    setSnackSeverity("success");
-                    setSnackMessage(
-                        <span>
-                            <b>Logged in, </b> redirecting...
-                        </span>
-                    );
-                    showSnack();
-                    setCookie("token", response.data.token);
-                    setTimeout(() => {
-                        window.location.href = "/user";
-                    }, 2000);
-                } else {
-                    setSnackSeverity("error");
-                    setSnackMessage(
-                        <span>
-                            <b>Incorrect</b> username or password.
-                        </span>
-                    );
-                    showSnack();
-                }
+                setSnackSeverity("success");
+                setSnackMessage(
+                    <span>
+                        <b>Logged in, </b> redirecting...
+                    </span>
+                );
+                showSnack();
+                setCookie("token", response.data.access_token);
+                setTimeout(() => {
+                    window.location.href = "/user";
+                }, 2000);
             })
             .catch(function(error) {
-                // handle error
-                console.log(error);
+                console.log(error.response);
+                setSnackSeverity("error");
+                setSnackMessage(
+                    <span>
+                        <b>Incorrect</b> username or password.
+                    </span>
+                );
+                showSnack();
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }
 
@@ -163,12 +165,7 @@ export default function SignIn() {
                             autoComplete="current-password"
                             onChange={event => passwordChange(event)}
                         />
-                        <FormControlLabel
-                            control={
-                                <Checkbox value="remember" color="primary" />
-                            }
-                            label="Remember me"
-                        />
+                        {loading ? <LinearProgress /> : null}
                         <Button
                             type="submit"
                             fullWidth

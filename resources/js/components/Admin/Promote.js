@@ -24,6 +24,8 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import CheckIcon from "@material-ui/icons/Check";
 import ClearIcon from "@material-ui/icons/Clear";
 
+import LinearProgress from "@material-ui/core/LinearProgress";
+
 import Axios from "axios";
 
 export default function Promote(props) {
@@ -46,9 +48,13 @@ export default function Promote(props) {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            setApplicants(response.data.data);
-        });
+        })
+            .then(response => {
+                setApplicants(response.data.data);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
     const verifyCandidate = user_id => {
@@ -85,91 +91,100 @@ export default function Promote(props) {
         user_id: null
     });
 
-    return (
-        <Template title="Verify Doctor Applicant">
-            <Paper style={{ padding: 12 }}>
-                <TableContainer component={Paper}>
-                    <Table aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Name</TableCell>
-                                <TableCell>STR Number</TableCell>
-                                <TableCell>File Number</TableCell>
-                                <TableCell align="right">City</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {applicants.map(row => (
-                                <TableRow key={row.id}>
-                                    <TableCell component="th" scope="row">
-                                        {row.user.first_name +
-                                            " " +
-                                            row.user.last_name}
-                                    </TableCell>
-                                    <TableCell>{row.str_number}</TableCell>
-                                    <TableCell>{row.file_number}</TableCell>
-                                    <TableCell align="right">
-                                        {row.city}
-                                    </TableCell>
-                                    <TableCell>
-                                        <ButtonGroup
-                                            variant="contained"
-                                            color="primary"
-                                        >
-                                            <Button
-                                                onClick={() =>
-                                                    handleClickOpen({
-                                                        str_number:
-                                                            row.str_number,
-                                                        name:
-                                                            row.user
-                                                                .first_name +
-                                                            " " +
-                                                            row.user.last_name,
-                                                        user_id: row.user.id
-                                                    })
-                                                }
-                                            >
-                                                <CheckIcon />
-                                            </Button>
-                                            <Button color="secondary">
-                                                <ClearIcon />
-                                            </Button>
-                                        </ButtonGroup>
-                                    </TableCell>
+    const [loading, setLoading] = useState(true);
+
+    if (loading)
+        return (
+            <Template>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title="Verify Doctor Applicant">
+                <Paper style={{ padding: 12 }}>
+                    <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell>STR Number</TableCell>
+                                    <TableCell>File Number</TableCell>
+                                    <TableCell align="right">City</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </Paper>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-            >
-                <DialogTitle id="alert-dialog-title">Are you sure?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        You are going to promote {candidate.name} with STR
-                        number {candidate.str_number} to be a doctor role
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button
-                        onClick={() => verifyCandidate(candidate.user_id)}
-                        color="primary"
-                        autoFocus
-                    >
-                        Ok
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Template>
-    );
+                            </TableHead>
+                            <TableBody>
+                                {applicants.map(row => (
+                                    <TableRow key={row.id}>
+                                        <TableCell component="th" scope="row">
+                                            {row.user.first_name +
+                                                " " +
+                                                row.user.last_name}
+                                        </TableCell>
+                                        <TableCell>{row.str_number}</TableCell>
+                                        <TableCell>{row.file_number}</TableCell>
+                                        <TableCell align="right">
+                                            {row.city}
+                                        </TableCell>
+                                        <TableCell>
+                                            <ButtonGroup
+                                                variant="contained"
+                                                color="primary"
+                                            >
+                                                <Button
+                                                    onClick={() =>
+                                                        handleClickOpen({
+                                                            str_number:
+                                                                row.str_number,
+                                                            name:
+                                                                row.user
+                                                                    .first_name +
+                                                                " " +
+                                                                row.user
+                                                                    .last_name,
+                                                            user_id: row.user.id
+                                                        })
+                                                    }
+                                                >
+                                                    <CheckIcon />
+                                                </Button>
+                                                <Button color="secondary">
+                                                    <ClearIcon />
+                                                </Button>
+                                            </ButtonGroup>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle id="alert-dialog-title">
+                        Are you sure?
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            You are going to promote {candidate.name} with STR
+                            number {candidate.str_number} to be a doctor role
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={() => verifyCandidate(candidate.user_id)}
+                            color="primary"
+                            autoFocus
+                        >
+                            Ok
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </Template>
+        );
 }
 
 if (document.getElementById("promote")) {
