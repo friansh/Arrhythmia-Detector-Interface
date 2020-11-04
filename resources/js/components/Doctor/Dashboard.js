@@ -82,22 +82,22 @@ export default function Dashboard(props) {
     let firstName = null;
     let lastName = null;
 
-    function firstNameChange(event) {
+    const firstNameChange = () => {
         firstName = event.target.value;
         searchUser();
-    }
+    };
 
-    function lastNameChange(event) {
+    const lastNameChange = () => {
         lastName = event.target.value;
         searchUser();
-    }
+    };
 
     function searchUser() {
         if (
-            firstName != "" ||
-            lastName != "" ||
-            firstName != null ||
-            lastName != null
+            firstName !== "" ||
+            lastName !== "" ||
+            firstName !== null ||
+            lastName !== null
         ) {
             Axios.post(
                 "/api/user/search",
@@ -264,7 +264,7 @@ export default function Dashboard(props) {
                             </Table>
                         </TableContainer>
                         <Grid container spacing={2}>
-                            <Grid item md={6}>
+                            <Grid item xs={12} sm={6}>
                                 <Paper>
                                     <Doughnut
                                         data={{
@@ -296,7 +296,7 @@ export default function Dashboard(props) {
                                     />
                                 </Paper>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} sm={6}>
                                 <Paper
                                     component={Paper}
                                     style={{ padding: 12 }}
@@ -305,26 +305,25 @@ export default function Dashboard(props) {
                                         variant="h6"
                                         style={{ marginBottom: 5 }}
                                     >
-                                        <SearchIcon /> Search for user
-                                        classified data
+                                        <SearchIcon /> Search user data
                                     </Typography>
 
                                     <Grid container spacing={1}>
-                                        <Grid item lg={6}>
+                                        <Grid item xs={12} md={6}>
                                             <TextField
                                                 label="First Name"
-                                                onChange={event =>
-                                                    firstNameChange(event)
-                                                }
+                                                onChange={firstNameChange}
+                                                size="small"
+                                                fullWidth
                                                 variant="outlined"
                                             />
                                         </Grid>
-                                        <Grid item lg={6}>
+                                        <Grid item xs={12} md={6}>
                                             <TextField
                                                 label="Last Name"
-                                                onChange={event =>
-                                                    lastNameChange(event)
-                                                }
+                                                onChange={lastNameChange}
+                                                size="small"
+                                                fullWidth
                                                 variant="outlined"
                                             />
                                         </Grid>

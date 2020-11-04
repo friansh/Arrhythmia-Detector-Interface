@@ -105,6 +105,111 @@ class UserController extends Controller
         $applicant = Doctor::where('verified', true)->with('user')->get();
         return response()->json(['status' => true, 'data' => $applicant]);
     }
+
+    public function changePassword( Request $request ) {
+        $validator = Validator::make( $request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required',
+            'new_password_confirm' => 'required'
+            ]);
+            
+            
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+        
+        $u = Auth::user();
+
+        if ( !Hash::check($request->old_password, $u->password) )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Incorrect old password.'
+            ]);
+
+        if ( $request->new_password !== $request->new_password_confirm ) 
+            return response()->json( [
+                'status' => false,
+                'message' => 'Password and the confirmation value wasnt same.'
+            ]);
+
+        $u->password = Hash::make( $request->new_password );
+
+        if ( $u->save() )
+            return response()->json(['status' => true]);
+        else
+            return response()->json( [
+                'status' => false,
+                'message' => 'Failed to save.'
+            ]);
+    }
+
+    public function rejectDoctorApplicant( $id ) {
+        $u = User::find( $id );
+        
+        if ( $u == null )
+        return response()->json( [
+            'status' => false,
+            'message' => 'User not found'
+        ]);
+
+        if ( $u->doctor()->doesntExist() )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Applicant does not exist.'
+            ]);  
+
+        if ( $u->doctor()->first()->verified )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Cannot reject validated doctor.'
+            ]);   
+
+        if ( $u->doctor()->first()->delete() ) 
+            return response()->json(['status' => true]);
+        else
+            return response()->json( [
+                'status' => false,
+                'message' => 'Failed to reject.'
+            ]);
+    }
+
+    public function demote( $id) {
+        $user = User::find( $id );
+        
+        if ( $user == null )
+            return response()->json( [
+                'status' => false,
+                'message' => 'User not found'
+            ]);
+
+        $d = $user->doctor();
+
+        if ( $d->doesntExist() )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Applicant does not exist.'
+            ]);  
+
+        $d = $d->first();
+
+        if ( !$d->verified )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Cannot demote unvalidated doctor.'
+            ]);   
+
+        $d->verified = false;
+
+        if ( $d->save() ) 
+            return response()->json(['status' => true]);
+        else
+            return response()->json( [
+                'status' => false,
+                'message' => 'Failed to demote.'
+            ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -280,18 +385,8 @@ class UserController extends Controller
             ]);
     }
 
-    public function promote( Request $request ) {
-        $validator = Validator::make( $request->all(), [
-            'user_id' => 'required|integer|gte:0'
-        ]);
-
-        if ($validator->fails()) 
-            return response()->json( [
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
-
-        $user = User::find( $request->user_id );
+    public function promote( $id ) {
+        $user = User::find( $id );
 
         if ( $user == null )
             return response()->json( [
@@ -308,9 +403,16 @@ class UserController extends Controller
             ]);
 
         $doctor = $doctor->first();
+
+        if ( $doctor->verified )
+            return response()->json( [
+                'status' => false,
+                'message' => 'Cannot promote validated doctor.'
+            ]);   
+
         $doctor->verified = true;
 
-        if ( $user->doctor()->save( $doctor ) ) 
+        if ( $doctor->save() ) 
             return response()->json( [
                 'status' => true,
             ]);

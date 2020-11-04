@@ -44,13 +44,16 @@ Route::group( [ 'middleware' => 'doctor' ], function() {
 Route::group( [ 'middleware' => 'admin', 'prefix' => 'admin' ], function() {
     Route::get('/dashboard', 'UserController@adminDashboard');
     Route::get('/doctor', 'UserController@indexDoctor');
-    Route::post('/promote', 'UserController@promote');
+    Route::delete('/doctor/{id}', 'UserController@rejectDoctorApplicant');
+    Route::post('/promote/{id}', 'UserController@promote');
+    Route::post('/demote/{id}', 'UserController@demote');
     Route::get('/applicant', 'UserController@indexDoctorApplicant');
     Route::get('/user/{id}', 'UserController@show');
     Route::get('/doctor/{id}', 'UserController@showDoctor');
 });
 
 Route::post( '/register', 'UserController@register' );
+Route::patch( '/password', 'UserController@changePassword')->middleware('auth');
 Route::get( '/active', 'UserController@active' )->middleware('auth');
 Route::get( '/device', 'DeviceController@index' )->middleware('auth');
 Route::post( '/device/refresh', 'DeviceController@refreshToken' )->middleware('auth');

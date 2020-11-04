@@ -52,6 +52,21 @@ export default function ManageDoctor(props) {
         setDeleteDialogOpen(true);
     };
 
+    const demoteDoctor = () => {
+        Axios.post(
+            "/api/admin/demote/" + doctorDelete.id,
+            {},
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(response => {
+            console.log(response.data);
+            if (response.data.status) location.reload();
+        });
+    };
+
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editDialogLoading, setEditDialogLoading] = useState(true);
     const [doctorEdit, setDoctorEdit] = useState({
@@ -136,33 +151,30 @@ export default function ManageDoctor(props) {
                                                 variant="contained"
                                                 color="primary"
                                             >
-                                                <Button>
-                                                    <EditIcon
-                                                        onClick={() =>
-                                                            handleEditDialogOpen(
-                                                                {
-                                                                    id: row.id
-                                                                }
-                                                            )
-                                                        }
-                                                    />
+                                                <Button
+                                                    onClick={() =>
+                                                        handleEditDialogOpen({
+                                                            id: row.id
+                                                        })
+                                                    }
+                                                >
+                                                    <EditIcon />
                                                 </Button>
-                                                <Button color="secondary">
-                                                    <DeleteIcon
-                                                        onClick={() =>
-                                                            handleDeleteDialogOpen(
-                                                                {
-                                                                    id: row.id,
-                                                                    name:
-                                                                        row.user
-                                                                            .first_name +
-                                                                        " " +
-                                                                        row.user
-                                                                            .last_name
-                                                                }
-                                                            )
-                                                        }
-                                                    />
+                                                <Button
+                                                    color="secondary"
+                                                    onClick={() =>
+                                                        handleDeleteDialogOpen({
+                                                            id: row.id,
+                                                            name:
+                                                                row.user
+                                                                    .first_name +
+                                                                " " +
+                                                                row.user
+                                                                    .last_name
+                                                        })
+                                                    }
+                                                >
+                                                    <DeleteIcon />
                                                 </Button>
                                             </ButtonGroup>
                                         </TableCell>
@@ -190,7 +202,7 @@ export default function ManageDoctor(props) {
                         >
                             Cancel
                         </Button>
-                        <Button color="primary" autoFocus>
+                        <Button color="primary" onClick={demoteDoctor}>
                             Ok
                         </Button>
                     </DialogActions>

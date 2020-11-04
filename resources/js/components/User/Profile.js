@@ -68,15 +68,6 @@ export default function Profile() {
     const [country, setCountry] = useState();
     const [zipCode, setZipCode] = useState();
     const [birthday, setBirthday] = React.useState(new Date(1990, 1, 0));
-    const [user, setUser] = useState({
-        first_name: "",
-        last_name: "",
-        address: "",
-        zip_code: "",
-        city: "",
-        province: "",
-        country: ""
-    });
     const [device, setDevice] = useState({
         token: "",
         updated_at: ""
@@ -98,6 +89,9 @@ export default function Profile() {
         setUpdatedAlert(false);
     };
 
+    const [messageContent, setMessageContent] = useState();
+    const [messageSeverity, setMessageSeverity] = useState("success");
+
     const handleUpdate = () => {
         Axios.post(
             "/api/user",
@@ -118,7 +112,16 @@ export default function Profile() {
                 }
             }
         ).then(response => {
-            if (response.data.status) setUpdatedAlert(true);
+            console.log(response.data);
+            if (response.data.status) {
+                setMessageContent("The users profile has been updated.");
+                setMessageSeverity("success");
+                setUpdatedAlert(true);
+            } else {
+                setMessageContent("Failed to update user details.");
+                setMessageSeverity("error");
+                setUpdatedAlert(true);
+            }
         });
     };
 
@@ -169,6 +172,49 @@ export default function Profile() {
         setLoading(false);
     };
 
+    const [oldPassword, setOldPassword] = useState();
+    const [newPassword, setNewPassword] = useState();
+    const [newPasswordConfirm, setNewPasswordConfirm] = useState();
+
+    const handleOldPassword = e => {
+        setOldPassword(e.target.value);
+    };
+
+    const handleNewPassword = e => {
+        setNewPassword(e.target.value);
+    };
+
+    const handleNewPasswordConfirm = e => {
+        setNewPasswordConfirm(e.target.value);
+    };
+
+    const changePassword = () => {
+        Axios.post(
+            "/api/password",
+            {
+                _method: "PATCH",
+                old_password: oldPassword,
+                new_password: newPassword,
+                new_password_confirm: newPasswordConfirm
+            },
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(response => {
+            if (response.data.status) {
+                setMessageContent("Your password has been changed.");
+                setMessageSeverity("success");
+                setUpdatedAlert(true);
+            } else {
+                setMessageContent("Failed to update user password.");
+                setMessageSeverity("error");
+                setUpdatedAlert(true);
+            }
+        });
+    };
+
     if (loading)
         return (
             <Template>
@@ -182,7 +228,7 @@ export default function Profile() {
                 Profile
             </Typography> */}
                 <Grid container spacing={2}>
-                    <Grid item md={3} style={{ padding: 12 }}>
+                    <Grid item md={3} xs={12} style={{ padding: 12 }}>
                         <Paper style={{ padding: 12 }}>
                             <Grid container>
                                 <Grid item xs={12} style={{ marginBottom: 12 }}>
@@ -236,6 +282,54 @@ export default function Profile() {
                                     onClick={handleTokenDialogOpen}
                                 >
                                     Regenerate
+                                </Button>
+                            </Grid>
+                        </Paper>
+                        <Paper style={{ padding: 12, marginTop: 12 }}>
+                            <Typography
+                                variant="subtitle2"
+                                align="center"
+                                style={{ marginBottom: 12 }}
+                            >
+                                Change User Password
+                            </Typography>
+                            <TextField
+                                label="Old Password"
+                                type="password"
+                                variant="outlined"
+                                size="small"
+                                onChange={handleOldPassword}
+                                style={{ marginBottom: 12 }}
+                                fullWidth
+                            />
+                            <TextField
+                                label="New Password"
+                                type="password"
+                                variant="outlined"
+                                size="small"
+                                onChange={handleNewPassword}
+                                style={{ marginBottom: 12 }}
+                                fullWidth
+                            />
+                            <TextField
+                                label="New Password Confirmation"
+                                type="password"
+                                variant="outlined"
+                                size="small"
+                                onChange={handleNewPasswordConfirm}
+                                fullWidth
+                            />
+                            <Grid
+                                container
+                                justify="flex-end"
+                                style={{ marginTop: 12 }}
+                            >
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={changePassword}
+                                >
+                                    Update
                                 </Button>
                             </Grid>
                         </Paper>
@@ -385,9 +479,9 @@ export default function Profile() {
                         elevation={6}
                         variant="filled"
                         onClose={closeUpdatedAlert}
-                        severity="success"
+                        severity={messageSeverity}
                     >
-                        The users profile has been updated.
+                        {messageContent}
                     </MuiAlert>
                 </Snackbar>
             </Template>

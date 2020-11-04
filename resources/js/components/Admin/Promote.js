@@ -57,12 +57,10 @@ export default function Promote(props) {
             });
     }, []);
 
-    const verifyCandidate = user_id => {
+    const verifyCandidate = () => {
         Axios.post(
-            "/api/admin/promote",
-            {
-                user_id: user_id
-            },
+            "/api/admin/promote/" + candidate.user_id,
+            {},
             {
                 headers: {
                     Authorization: "Bearer " + cookies.token
@@ -90,6 +88,34 @@ export default function Promote(props) {
         name: null,
         user_id: null
     });
+
+    const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+
+    const handleRejectDialogOpen = candidate => {
+        setCandidate(candidate);
+        setRejectDialogOpen(true);
+    };
+
+    const handleRejectDialogClose = () => {
+        setRejectDialogOpen(false);
+    };
+
+    const rejectApplicant = () => {
+        Axios.post(
+            "/api/admin/doctor/" + candidate.user_id,
+            {
+                _method: "DELETE"
+            },
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(response => {
+            console.log(response.data);
+            if (response.data.status) location.reload();
+        });
+    };
 
     const [loading, setLoading] = useState(true);
 
@@ -149,7 +175,22 @@ export default function Promote(props) {
                                                 >
                                                     <CheckIcon />
                                                 </Button>
-                                                <Button color="secondary">
+                                                <Button
+                                                    color="secondary"
+                                                    onClick={() =>
+                                                        handleRejectDialogOpen({
+                                                            str_number:
+                                                                row.str_number,
+                                                            name:
+                                                                row.user
+                                                                    .first_name +
+                                                                " " +
+                                                                row.user
+                                                                    .last_name,
+                                                            user_id: row.user.id
+                                                        })
+                                                    }
+                                                >
                                                     <ClearIcon />
                                                 </Button>
                                             </ButtonGroup>
@@ -175,10 +216,35 @@ export default function Promote(props) {
                             Cancel
                         </Button>
                         <Button
-                            onClick={() => verifyCandidate(candidate.user_id)}
+                            onClick={verifyCandidate}
                             color="primary"
                             autoFocus
                         >
+                            Ok
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog
+                    open={rejectDialogOpen}
+                    onClose={handleRejectDialogClose}
+                >
+                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            You are going to reject {candidate.name} (
+                            {candidate.str_number}) doctor applicants. This
+                            action is irreversible.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button
+                            onClick={handleRejectDialogClose}
+                            color="primary"
+                        >
+                            Cancel
+                        </Button>
+                        <Button color="primary" onClick={rejectApplicant}>
                             Ok
                         </Button>
                     </DialogActions>
