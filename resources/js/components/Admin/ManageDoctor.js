@@ -24,7 +24,7 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 import TextField from "@material-ui/core/TextField";
@@ -66,30 +66,30 @@ export default function ManageDoctor(props) {
         });
     };
 
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [editDialogLoading, setEditDialogLoading] = useState(true);
-    const [doctorEdit, setDoctorEdit] = useState({
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
+    const [viewDialogLoading, setViewDialogLoading] = useState(true);
+    const [doctorView, setDoctorView] = useState({
         qualification: "",
         str_number: "",
         file_number: "",
         city: ""
     });
 
-    const handleEditDialogClose = () => {
-        setEditDialogOpen(false);
-        setEditDialogLoading(true);
+    const handleViewDialogClose = () => {
+        setViewDialogOpen(false);
+        setViewDialogLoading(true);
     };
 
-    const handleEditDialogOpen = data => {
+    const handleViewDialogOpen = data => {
         Axios.get("/api/admin/doctor/" + data.id, {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
         }).then(response => {
-            setDoctorEdit(response.data);
-            setEditDialogLoading(false);
+            setDoctorView(response.data);
+            setViewDialogLoading(false);
         });
-        setEditDialogOpen(true);
+        setViewDialogOpen(true);
     };
 
     useEffect(() => {
@@ -152,12 +152,12 @@ export default function ManageDoctor(props) {
                                             >
                                                 <Button
                                                     onClick={() =>
-                                                        handleEditDialogOpen({
+                                                        handleViewDialogOpen({
                                                             id: row.id
                                                         })
                                                     }
                                                 >
-                                                    <EditIcon />
+                                                    <VisibilityIcon />
                                                 </Button>
                                                 <Button
                                                     color="secondary"
@@ -207,51 +207,46 @@ export default function ManageDoctor(props) {
                     </DialogActions>
                 </Dialog>
 
-                <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
-                    {editDialogLoading ? <LinearProgress /> : null}
-                    <DialogTitle>Edit Doctor Detail</DialogTitle>
+                <Dialog open={viewDialogOpen} onClose={handleViewDialogClose}>
+                    {viewDialogLoading ? <LinearProgress /> : null}
+                    <DialogTitle>View Doctor Detail</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please edit the form below to edit the doctor
-                            detail. Please consider that this action is
-                            irreversible.
+                            The doctor detailed information is shown below.
                         </DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
                             label="Qualification"
                             type="text"
-                            value={doctorEdit.qualification}
+                            value={doctorView.qualification}
                             fullWidth
                         />
                         <TextField
                             margin="dense"
                             label="STR Number"
                             type="text"
-                            value={doctorEdit.str_number}
+                            value={doctorView.str_number}
                             fullWidth
                         />
                         <TextField
                             margin="dense"
                             label="File Number"
                             type="text"
-                            value={doctorEdit.file_number}
+                            value={doctorView.file_number}
                             fullWidth
                         />
                         <TextField
                             margin="dense"
                             label="City"
                             type="text"
-                            value={doctorEdit.city}
+                            value={doctorView.city}
                             fullWidth
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleEditDialogClose} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={handleEditDialogClose} color="primary">
-                            Update
+                        <Button onClick={handleViewDialogClose} color="primary">
+                            Close
                         </Button>
                     </DialogActions>
                 </Dialog>
