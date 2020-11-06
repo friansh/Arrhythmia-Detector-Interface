@@ -24,20 +24,19 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 import TextField from "@material-ui/core/TextField";
 
 import Axios from "axios";
-
 import MomentUtils from "@date-io/moment";
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker
 } from "@material-ui/pickers";
 
-export default function ManageUser(props) {
+export default function ManageUser() {
     const [cookies, setCookie] = useCookies();
     const [loading, setLoading] = useState(true);
 
@@ -60,8 +59,24 @@ export default function ManageUser(props) {
         setDeleteDialogOpen(true);
     };
 
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [editDialogLoading, setEditDialogLoading] = useState(true);
+    const handleDeleteUser = () => {
+        Axios.post(
+            "/api/admin/user/" + userDelete.id,
+            {
+                _method: "DELETE"
+            },
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
+            }
+        ).then(response => {
+            if (response.data.status) location.reload();
+        });
+    };
+
+    const [viewDialogOpen, setViewDialogOpen] = useState(false);
+    const [viewDialogLoading, setViewDialogLoading] = useState(true);
     const [userEdit, setUserEdit] = useState({
         first_name: "",
         last_name: "",
@@ -73,29 +88,21 @@ export default function ManageUser(props) {
         birthday: null
     });
 
-    const handleEditDialogClose = () => {
-        setEditDialogOpen(false);
-        setEditDialogLoading(true);
+    const handleViewDialogClose = () => {
+        setViewDialogOpen(false);
+        setViewDialogLoading(true);
     };
 
-    const handleEditDialogOpen = data => {
+    const handleViewDialogOpen = data => {
         Axios.get("/api/admin/user/" + data.id, {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
         }).then(response => {
-            console.log(response.data);
             setUserEdit(response.data);
-            setEditDialogLoading(false);
+            setViewDialogLoading(false);
         });
-        setEditDialogOpen(true);
-    };
-
-    const [selectedDate, setSelectedDate] = React.useState(
-        new Date("2014-08-18T21:11:54")
-    );
-    const handleDateChange = date => {
-        setSelectedDate(date);
+        setViewDialogOpen(true);
     };
 
     useEffect(() => {
@@ -149,35 +156,33 @@ export default function ManageUser(props) {
                                             <ButtonGroup
                                                 variant="contained"
                                                 color="primary"
+                                                size="small"
                                             >
-                                                <Button>
-                                                    <EditIcon
-                                                        onClick={() =>
-                                                            handleEditDialogOpen(
-                                                                {
-                                                                    id: row.id
-                                                                }
-                                                            )
-                                                        }
-                                                    />
+                                                <Button
+                                                    onClick={() =>
+                                                        handleViewDialogOpen({
+                                                            id: row.id
+                                                        })
+                                                    }
+                                                >
+                                                    <VisibilityIcon />
                                                 </Button>
-                                                <Button color="secondary">
-                                                    <DeleteIcon
-                                                        onClick={() =>
-                                                            handleDeleteDialogOpen(
-                                                                {
-                                                                    id: row.id,
-                                                                    name:
-                                                                        row.first_name +
-                                                                        " " +
-                                                                        row.last_name,
-                                                                    birthday: row.birthday.split(
-                                                                        " "
-                                                                    )[0]
-                                                                }
-                                                            )
-                                                        }
-                                                    />
+                                                <Button
+                                                    color="secondary"
+                                                    onClick={() =>
+                                                        handleDeleteDialogOpen({
+                                                            id: row.id,
+                                                            name:
+                                                                row.first_name +
+                                                                " " +
+                                                                row.last_name,
+                                                            birthday: row.birthday.split(
+                                                                " "
+                                                            )[0]
+                                                        })
+                                                    }
+                                                >
+                                                    <DeleteIcon />
                                                 </Button>
                                             </ButtonGroup>
                                         </TableCell>
@@ -205,19 +210,18 @@ export default function ManageUser(props) {
                         >
                             Cancel
                         </Button>
-                        <Button color="primary" autoFocus>
+                        <Button color="primary" onClick={handleDeleteUser}>
                             Ok
                         </Button>
                     </DialogActions>
                 </Dialog>
 
-                <Dialog open={editDialogOpen} onClose={handleEditDialogClose}>
-                    {editDialogLoading ? <LinearProgress /> : null}
-                    <DialogTitle>Edit User Detail</DialogTitle>
+                <Dialog open={viewDialogOpen} onClose={handleViewDialogClose}>
+                    {viewDialogLoading ? <LinearProgress /> : null}
+                    <DialogTitle>View User Detail</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please edit the form below to edit the user detail.
-                            Please consider that this action is irreversible.
+                            The user detailed information is shown below.
                         </DialogContentText>
                         <TextField
                             autoFocus
@@ -241,7 +245,7 @@ export default function ManageUser(props) {
                                 label="Birthday"
                                 format="MMMM Do YYYY"
                                 value={userEdit.birthday}
-                                onChange={handleDateChange}
+                                onChange={() => {}}
                             />
                         </MuiPickersUtilsProvider>
                         <TextField
@@ -281,11 +285,8 @@ export default function ManageUser(props) {
                         />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleEditDialogClose} color="primary">
-                            Cancel
-                        </Button>
-                        <Button onClick={handleEditDialogClose} color="primary">
-                            Edit
+                        <Button onClick={handleViewDialogClose} color="primary">
+                            Close
                         </Button>
                     </DialogActions>
                 </Dialog>

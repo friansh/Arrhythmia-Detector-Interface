@@ -62,7 +62,6 @@ export default function ManageDoctor(props) {
                 }
             }
         ).then(response => {
-            console.log(response.data);
             if (response.data.status) location.reload();
         });
     };
@@ -87,7 +86,6 @@ export default function ManageDoctor(props) {
                 Authorization: "Bearer " + cookies.token
             }
         }).then(response => {
-            console.log(response.data);
             setDoctorEdit(response.data);
             setEditDialogLoading(false);
         });
@@ -150,6 +148,7 @@ export default function ManageDoctor(props) {
                                             <ButtonGroup
                                                 variant="contained"
                                                 color="primary"
+                                                size="small"
                                             >
                                                 <Button
                                                     onClick={() =>

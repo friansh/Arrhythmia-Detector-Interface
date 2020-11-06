@@ -210,6 +210,56 @@ class UserController extends Controller
                 'message' => 'Failed to demote.'
             ]);
     }
+
+    public function applyDoctor( Request $request ) {
+        $validator = Validator::make( $request->all(), [
+            'qualification' => 'required|max:100',
+            'str_number' => 'required|max:50',
+            'file_number' => 'required|integer|gte:0',
+            'application_date' => 'required|date',
+            'valid_until' => 'required|date',
+            'city' => 'required|max:100',
+        ]);
+
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+
+        $d = Auth::user()->doctor();
+
+        if ( $d->exists() )
+            return response()->json( [
+                'status' => false,
+                'message' => "You already have a doctor application."
+            ]);
+
+        $a = new Doctor;
+        $a->qualification = $request->qualification;
+        $a->str_number = $request->str_number;
+        $a->file_number = $request->file_number;
+
+        $ad = new \DateTime($request->application_date);
+        $a->application_date = $ad->format('Y-m-d H:i:s');
+
+        $vu = new \DateTime($request->valid_until);
+        $a->valid_until = $vu->format('Y-m-d H:i:s');
+
+        $a->city = $request->city;
+        $a->verified = false;
+
+        if ( $d->save( $a ) )
+            return response()->json(['status' => true]);
+        else
+            return response()->json( [
+                'status' => false,
+                'message' => "Failed to save."
+            ]);
+
+            
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -315,7 +365,16 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $u = User::find( $id );
+        if ( $u->delete() ) 
+            return response()->json( [
+                'status' => true,
+            ]);
+        else 
+            return response()->json( [
+                'status' => false,
+                'message' => 'Failed to delete.'
+            ]);
     }
 
     public function register( Request $request ) {

@@ -67,7 +67,6 @@ export default function Promote(props) {
                 }
             }
         ).then(response => {
-            console.log(response.data);
             if (response.data.status) location.reload();
         });
     };
@@ -112,7 +111,6 @@ export default function Promote(props) {
                 }
             }
         ).then(response => {
-            console.log(response.data);
             if (response.data.status) location.reload();
         });
     };
@@ -157,6 +155,7 @@ export default function Promote(props) {
                                             <ButtonGroup
                                                 variant="contained"
                                                 color="primary"
+                                                size="small"
                                             >
                                                 <Button
                                                     onClick={() =>

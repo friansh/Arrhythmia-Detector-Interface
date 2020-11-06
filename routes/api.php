@@ -25,7 +25,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
 //     return $request->user();
 // });
 
-Route::group( [ 'prefix' => 'data', 'middleware' => 'auth:api' ], function() {
+Route::group( [ 'prefix' => 'data', 'middleware' => 'auth' ], function() {
     Route::get('/dashboard', 'UserController@userDashboard');
     Route::get('/classified', 'ClassifiedController@index');
     Route::get('/raw', 'RawController@index');
@@ -49,12 +49,17 @@ Route::group( [ 'middleware' => 'admin', 'prefix' => 'admin' ], function() {
     Route::post('/demote/{id}', 'UserController@demote');
     Route::get('/applicant', 'UserController@indexDoctorApplicant');
     Route::get('/user/{id}', 'UserController@show');
+    Route::delete('/user/{id}', 'UserController@destroy');
     Route::get('/doctor/{id}', 'UserController@showDoctor');
 });
 
+Route::group( [ 'middleware' => 'auth' ], function() {
+    Route::patch( '/password', 'UserController@changePassword');
+    Route::put( '/doctor', 'UserController@applyDoctor');
+    Route::get( '/active', 'UserController@active' );
+    Route::get( '/device', 'DeviceController@index' );
+    Route::post( '/device/refresh', 'DeviceController@refreshToken' );
+} );
+
 Route::post( '/register', 'UserController@register' );
-Route::patch( '/password', 'UserController@changePassword')->middleware('auth');
-Route::get( '/active', 'UserController@active' )->middleware('auth');
-Route::get( '/device', 'DeviceController@index' )->middleware('auth');
-Route::post( '/device/refresh', 'DeviceController@refreshToken' )->middleware('auth');
 Route::put('/classifier', 'ClassifiedController@store');
