@@ -67,7 +67,7 @@ export default function Dashboard(props) {
             <Template fullName={name}>
                 <Grid container spacing={2}>
                     <Grid item md={9} style={{ marginBottom: 12 }}>
-                        <Typography variant="h5">
+                        <Typography variant="h5" style={{ marginBottom: 10 }}>
                             {user.first_name + " " + user.last_name}
                             <SupervisorAccountIcon />
                         </Typography>
@@ -119,7 +119,7 @@ export default function Dashboard(props) {
                                     </TableRow>
                                     <TableRow>
                                         <TableCell component="th" scope="row">
-                                            Last IP
+                                            Last Login IP
                                         </TableCell>
                                         <TableCell align="right">
                                             {user.last_ip}

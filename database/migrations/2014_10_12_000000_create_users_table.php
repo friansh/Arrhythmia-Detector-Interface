@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('last_name', 50);
             $table->string('address', 200);
             $table->dateTime('birthday');
+            $table->boolean('gender');
             $table->string('zip_code', 10);
             $table->string('city', 190);
             $table->string('province', 90);

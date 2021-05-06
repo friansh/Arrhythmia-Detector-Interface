@@ -8,6 +8,9 @@ import Classify from "../App/Classify";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 
+import TimelineIcon from "@material-ui/icons/Timeline";
+import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+
 import Axios from "axios";
 import { useCookies } from "react-cookie";
 
@@ -62,8 +65,11 @@ export default function Messages() {
                     column={4}
                     data={classifiedData}
                     button={[
-                        { text: "Raw", link: "/doctor/raw/" },
-                        { text: "Classifieds", link: "/doctor/classified/" }
+                        { text: <TimelineIcon />, link: "/doctor/ecg/" },
+                        {
+                            text: <DonutLargeIcon />,
+                            link: "/doctor/classified/"
+                        }
                     ]}
                     columns={["Name", "Result", "Date and Time", "View"]}
                 />

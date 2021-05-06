@@ -16,7 +16,7 @@ require("./components/User/Dashboard");
 require("./components/User/Profile");
 
 require("./components/Doctor/Dashboard");
-require("./components/Doctor/Raw");
+require("./components/Doctor/ECG");
 require("./components/Doctor/Classified");
 require("./components/Doctor/Messages");
 
@@ -26,7 +26,7 @@ require("./components/Admin/ManageUser");
 require("./components/Admin/ManageDoctor");
 
 require("./components/User/History");
-require("./components/User/Raw");
+require("./components/User/ECG");
 require("./components/User/Classified");
 
 require("./components/SignIn");

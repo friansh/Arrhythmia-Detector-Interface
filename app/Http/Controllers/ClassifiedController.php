@@ -90,12 +90,12 @@ class ClassifiedController extends Controller
 
             if ( $request->has('data_per_page') )
                 return [
-                    'user' => User::select('id', 'first_name', 'last_name', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
+                    'user' => User::select('id', 'first_name', 'last_name', 'birthday', 'gender', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
                     'data' => User::find( $id )->classifieds()->paginate( $request->data_per_page )
                 ];
             else
                 return [
-                    'user' => User::select('id', 'first_name', 'last_name', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
+                    'user' => User::select('id', 'first_name', 'last_name', 'birthday', 'gender', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
                     'data' => User::find( $id )->classifieds()->get()
                 ];
     }

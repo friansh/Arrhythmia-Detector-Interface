@@ -15,24 +15,16 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import MailIcon from "@material-ui/icons/Mail";
 
+import WarningIcon from "@material-ui/icons/Warning";
 import FaceIcon from "@material-ui/icons/Face";
-
-import DonutLargeIcon from "@material-ui/icons/DonutLarge";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
-import ShowChartIcon from "@material-ui/icons/ShowChart";
 import PersonIcon from "@material-ui/icons/Person";
 import DashboardIcon from "@material-ui/icons/Dashboard";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-import Button from "@material-ui/core/Button";
 import Badge from "@material-ui/core/Badge";
 
 import { CookiesProvider } from "react-cookie";
-
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
 
 import { useCookies } from "react-cookie";
 
@@ -210,20 +202,6 @@ export default function Template(props) {
                                 ? "Doctor Dashboard"
                                 : props.title}
                         </Typography>
-                        <Button color="inherit" onClick={handleClick}>
-                            <AccountCircleIcon />
-                            {user.first_name + " " + user.last_name}
-                            {user.role == 1 ? " M.D." : null}
-                        </Button>
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={logout}>Logout</MenuItem>
-                        </Menu>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -276,10 +254,10 @@ export default function Template(props) {
                                     badgeContent={abnormalCount}
                                     color="error"
                                 >
-                                    <MailIcon />
+                                    <WarningIcon />
                                 </Badge>
                             </ListItemIcon>
-                            <ListItemText primary={"Message"} />
+                            <ListItemText primary="Abnormal Data" />
                         </ListItem>
 
                         <ListItem
@@ -303,6 +281,15 @@ export default function Template(props) {
                                 <PersonIcon />
                             </ListItemIcon>
                             <ListItemText primary={"Profile"} />
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    <List>
+                        <ListItem button onClick={logout}>
+                            <ListItemIcon>
+                                <ExitToAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={"Logout"} />
                         </ListItem>
                     </List>
                 </Drawer>

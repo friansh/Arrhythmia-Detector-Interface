@@ -41,6 +41,8 @@ class UserController extends Controller
 
         return response()->json( [
             'fullName' => $userFullName,
+            'gender' => $activeUser->gender,
+            'birthday' => $activeUser->birthday,
             'lastData' => $lastData,
             'condition' => $condition,
             'battery' => $battery,
@@ -321,6 +323,7 @@ class UserController extends Controller
             'birthday' => 'required|date',
             'first_name' => 'required|max:20',
             'last_name' => 'required|max:50',
+            'gender' => 'required|boolean',
             'address' => 'required|max:200',
             'zip_code' => 'required|gte:0|integer',
             'city' => 'required',
@@ -337,6 +340,7 @@ class UserController extends Controller
         $user = User::find(auth()->id());
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        $user->gender = $request->gender;
         $user->address = $request->address;
         $user->zip_code = $request->zip_code;
         $user->city = $request->city;

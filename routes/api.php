@@ -63,3 +63,4 @@ Route::group( [ 'middleware' => 'auth' ], function() {
 
 Route::post( '/register', 'UserController@register' );
 Route::put('/classifier', 'ClassifiedController@store');
+Route::patch('/battery/{id}', 'DeviceController@updateBattery');

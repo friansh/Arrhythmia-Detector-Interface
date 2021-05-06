@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\User;
 
@@ -15,10 +16,23 @@ class RawController extends Controller
      */
     public function index( Request $request )
     {
-        if ( $request->has('data_per_page') )
-            return User::find( Auth::id() )->raws()->paginate( $request->data_per_page );
-        else
-            return User::find( Auth::id() )->raws()->get();
+        $validator = Validator::make( $request->all(), [
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i:s',
+            'end_time' => 'required|date_format:H:i:s',
+        ]);
+
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+
+        return response()->json( User::find( Auth::id() )->raws()
+                                    ->whereDate( 'created_at', '=', $request->date)
+                                    ->whereTime( 'created_at', '>=', $request->start_time)
+                                    ->whereTime( 'created_at', '<=', $request->end_time)
+                                    ->get() );
     }
 
     /**
@@ -52,16 +66,26 @@ class RawController extends Controller
      */
     public function showUser( Request $request, $id)
     {
-        if ( $request->has('data_per_page') )
-            return [
-                'user' => User::select('id', 'first_name', 'last_name', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
-                'data' => User::find( $id )->raws()->paginate( $request->data_per_page )
-            ];
-        else
-            return [
-                'user' => User::select('id', 'first_name', 'last_name', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
-                'data' => User::find( $id )->raws()->get()
-            ];
+        $validator = Validator::make( $request->all(), [
+            'date' => 'required|date',
+            'start_time' => 'required|date_format:H:i:s',
+            'end_time' => 'required|date_format:H:i:s',
+        ]);
+
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+
+        return [
+            'user' => User::select('id', 'first_name', 'last_name', 'birthday', 'address', 'city', 'province', 'country')->where( 'id', $id )->first(),
+            'data' => User::find( $id )->raws()
+                                        ->whereDate( 'created_at', '=', $request->date)
+                                        ->whereTime( 'created_at', '>=', $request->start_time)
+                                        ->whereTime( 'created_at', '<=', $request->end_time)
+                                        ->get()
+        ];
     }
 
     /**

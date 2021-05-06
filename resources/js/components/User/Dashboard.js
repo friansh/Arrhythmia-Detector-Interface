@@ -45,44 +45,53 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+function classify(num) {
+    switch (num) {
+        case 0:
+            return "Normal (NOR)";
+
+        case 1:
+            return "Premature Ventricular Contraction Beat (PVC)";
+
+        case 2:
+            return "Paced Beat (PAB)";
+
+        case 3:
+            return "Right Bundle Branch Block Beat (RBB)";
+
+        case 4:
+            return "Left Bundle Branch Block Beat (LBB)";
+
+        case 5:
+            return "Atrial Premature Contraction Beat (APC)";
+
+        case 6:
+            return "Ventricular Flutter Wave (VFW)";
+
+        case 7:
+            return "Premature Ventricular Contraction Beat (VEB)";
+
+        default:
+            return "Unknown";
+    }
+}
+
+function calculateAge(birthday) {
+    // birthday is a date
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
 export default function Dashboard(props) {
     const classes = useStyles();
     const theme = useTheme();
 
-    function classify(num) {
-        switch (num) {
-            case 0:
-                return "Normal (NOR)";
-
-            case 1:
-                return "Premature Ventricular Contraction Beat (PVC)";
-
-            case 2:
-                return "Paced Beat (PAB)";
-
-            case 3:
-                return "Right Bundle Branch Block Beat (RBB)";
-
-            case 4:
-                return "Left Bundle Branch Block Beat (LBB)";
-
-            case 5:
-                return "Atrial Premature Contraction Beat (APC)";
-
-            case 6:
-                return "Ventricular Flutter Wave (VFW)";
-
-            case 7:
-                return "Premature Ventricular Contraction Beat (VEB)";
-
-            default:
-                return "Unknown";
-        }
-    }
-
     const [cookies, setCookie] = useCookies();
 
     const [name, setName] = useState();
+    const [gender, setGender] = useState();
+    const [age, setAge] = useState();
     const [battery, setBattery] = useState();
     const [lastRawData, setLastRawData] = useState();
     const [lastClassifiedData, setLastClassifiedData] = useState();
@@ -96,6 +105,11 @@ export default function Dashboard(props) {
             }
         }).then(response => {
             setName(response.data.fullName);
+            setAge(calculateAge(new Date(response.data.birthday)));
+            setGender(() => {
+                if (response.data.gender == 1) return "Male";
+                return "Female";
+            });
             setBattery(response.data.battery.battery);
             setLastRawData(response.data.lastData.created_at);
             setLastClassifiedData(response.data.condition.result);
@@ -126,7 +140,7 @@ export default function Dashboard(props) {
                             >
                                 <Grid item>
                                     <Typography
-                                        variant="h5"
+                                        variant="h6"
                                         className={classes.infoCardTitle}
                                         color="primary"
                                     >
@@ -137,7 +151,10 @@ export default function Dashboard(props) {
                                     <AccountCircleIcon color="secondary" />
                                 </Grid>
                             </Grid>
-                            <Typography variant="h6">{name}</Typography>
+                            <Typography variant="subtitle1">{name}</Typography>
+                            <Typography variant="subtitle2">
+                                {gender}, {age} years old
+                            </Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={6} lg={3}>
@@ -149,18 +166,18 @@ export default function Dashboard(props) {
                             >
                                 <Grid item>
                                     <Typography
-                                        variant="h5"
+                                        variant="h6"
                                         className={classes.infoCardTitle}
                                         color="primary"
                                     >
-                                        Last Data
+                                        Last Received Data
                                     </Typography>
                                 </Grid>
                                 <Grid item>
                                     <ListIcon color="secondary" />
                                 </Grid>
                             </Grid>
-                            <Typography variant="h6">
+                            <Typography variant="subtitle2">
                                 <Moment>{lastRawData}</Moment>
                             </Typography>
                         </Paper>
@@ -174,18 +191,18 @@ export default function Dashboard(props) {
                             >
                                 <Grid item>
                                     <Typography
-                                        variant="h5"
+                                        variant="h6"
                                         className={classes.infoCardTitle}
                                         color="primary"
                                     >
-                                        Condition
+                                        Last Known Condition
                                     </Typography>
                                 </Grid>
                                 <Grid item>
                                     <DonutLargeIcon color="secondary" />
                                 </Grid>
                             </Grid>
-                            <Typography variant="h6">
+                            <Typography variant="subtitle2">
                                 {classify(lastClassifiedData)}
                             </Typography>
                         </Paper>
@@ -199,18 +216,20 @@ export default function Dashboard(props) {
                             >
                                 <Grid item>
                                     <Typography
-                                        variant="h5"
+                                        variant="h6"
                                         className={classes.infoCardTitle}
                                         color="primary"
                                     >
-                                        Battery
+                                        Device Battery
                                     </Typography>
                                 </Grid>
                                 <Grid item>
                                     <BatteryFullIcon color="secondary" />
                                 </Grid>
                             </Grid>
-                            <Typography variant="h6">{battery}%</Typography>
+                            <Typography variant="subtitle2">
+                                {battery}%
+                            </Typography>
                         </Paper>
                     </Grid>
                 </Grid>
@@ -220,10 +239,10 @@ export default function Dashboard(props) {
                         <Paper className={classes.summaryCard}>
                             <Typography
                                 color="primary"
-                                variant="h5"
+                                variant="h6"
                                 className={classes.summaryTitle}
                             >
-                                Data Summary
+                                Last 10 Classificator Result
                             </Typography>
                             <TableContainer component={Paper}>
                                 <Table
@@ -263,10 +282,10 @@ export default function Dashboard(props) {
                         <Paper className={classes.summaryCard}>
                             <Typography
                                 color="primary"
-                                variant="h5"
+                                variant="h6"
                                 className={classes.summaryTitle}
                             >
-                                Condition Summary
+                                Classificator Result Summary
                             </Typography>
                             <Doughnut
                                 data={{

@@ -20,7 +20,15 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
 import PersonIcon from "@material-ui/icons/Person";
+import SaveIcon from "@material-ui/icons/Save";
+import SaveAltIcon from "@material-ui/icons/SaveAlt";
+import SyncIcon from "@material-ui/icons/Sync";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 
@@ -63,6 +71,7 @@ export default function Profile() {
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
     const [address, setAddress] = useState();
+    const [gender, setGender] = useState();
     const [city, setCity] = useState();
     const [province, setProvince] = useState();
     const [country, setCountry] = useState();
@@ -100,11 +109,12 @@ export default function Profile() {
                 birthday: moment(birthday).format(),
                 first_name: firstName,
                 last_name: lastName,
-                address: address,
+                address,
+                gender,
                 zip_code: zipCode,
-                city: city,
-                province: province,
-                country: country
+                city,
+                province,
+                country
             },
             {
                 headers: {
@@ -135,6 +145,7 @@ export default function Profile() {
                 setBirthday(new Date(response.data.user.birthday));
                 setFirstName(response.data.user.first_name);
                 setLastName(response.data.user.last_name);
+                setGender(response.data.user.gender);
                 setAddress(response.data.user.address);
                 setZipCode(response.data.user.zip_code);
                 setCity(response.data.user.city);
@@ -280,6 +291,7 @@ export default function Profile() {
                                     variant="contained"
                                     color="primary"
                                     onClick={handleTokenDialogOpen}
+                                    endIcon={<SyncIcon />}
                                 >
                                     Regenerate
                                 </Button>
@@ -328,8 +340,9 @@ export default function Profile() {
                                     variant="contained"
                                     color="primary"
                                     onClick={changePassword}
+                                    endIcon={<SaveAltIcon />}
                                 >
-                                    Update
+                                    Update Password
                                 </Button>
                             </Grid>
                         </Paper>
@@ -372,6 +385,30 @@ export default function Profile() {
                                             onChange={handleDateChange}
                                         />
                                     </MuiPickersUtilsProvider>
+                                </Grid>
+                                <Grid item xs={12} style={{ padding: 12 }}>
+                                    <FormControl
+                                        variant="outlined"
+                                        style={{ width: "100%" }}
+                                    >
+                                        <InputLabel id="gender-field">
+                                            Gender
+                                        </InputLabel>
+                                        <Select
+                                            labelId="age-field"
+                                            value={gender}
+                                            onChange={event =>
+                                                setGender(event.target.value)
+                                            }
+                                            label="Gender"
+                                            fullWidth
+                                        >
+                                            <MenuItem value={0}>
+                                                Female
+                                            </MenuItem>
+                                            <MenuItem value={1}>Male</MenuItem>
+                                        </Select>
+                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={12} style={{ padding: 12 }}>
                                     <TextField
@@ -434,8 +471,9 @@ export default function Profile() {
                                             variant="contained"
                                             color="primary"
                                             onClick={handleUpdate}
+                                            endIcon={<SaveIcon />}
                                         >
-                                            Save Changes
+                                            Save Profile
                                         </Button>
                                     </Grid>
                                 </Grid>

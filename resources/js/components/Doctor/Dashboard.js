@@ -93,12 +93,8 @@ export default function Dashboard(props) {
     };
 
     function searchUser() {
-        if (
-            firstName !== "" ||
-            lastName !== "" ||
-            firstName !== null ||
-            lastName !== null
-        ) {
+        if (!firstName && !lastName) setUsersFound([]);
+        else {
             Axios.post(
                 "/api/user/search",
                 {
@@ -111,7 +107,6 @@ export default function Dashboard(props) {
                     }
                 }
             ).then(response => {
-                console.log("Searching for: " + firstName + " " + lastName);
                 setUsersFound(response.data);
             });
         }
@@ -186,7 +181,7 @@ export default function Dashboard(props) {
             <Template>
                 <Grid container spacing={2}>
                     <Grid item md={9} style={{ marginBottom: 12 }}>
-                        <Typography variant="h5">
+                        <Typography variant="h5" style={{ marginBottom: 10 }}>
                             {user.first_name + " " + user.last_name}
                             <VerifiedUserIcon />
                         </Typography>
@@ -301,12 +296,22 @@ export default function Dashboard(props) {
                                     component={Paper}
                                     style={{ padding: 12 }}
                                 >
-                                    <Typography
-                                        variant="h6"
-                                        style={{ marginBottom: 5 }}
+                                    <div
+                                        style={{
+                                            display: "flex"
+                                        }}
                                     >
-                                        <SearchIcon /> Search user data
-                                    </Typography>
+                                        <SearchIcon />
+                                        <Typography
+                                            variant="subtitle1"
+                                            style={{
+                                                marginLeft: 5,
+                                                fontWeight: "bold"
+                                            }}
+                                        >
+                                            Search for user data
+                                        </Typography>
+                                    </div>
 
                                     <Grid container spacing={1}>
                                         <Grid item xs={12} md={6}>
@@ -316,6 +321,7 @@ export default function Dashboard(props) {
                                                 size="small"
                                                 fullWidth
                                                 variant="outlined"
+                                                margin="dense"
                                             />
                                         </Grid>
                                         <Grid item xs={12} md={6}>
@@ -325,6 +331,7 @@ export default function Dashboard(props) {
                                                 size="small"
                                                 fullWidth
                                                 variant="outlined"
+                                                margin="dense"
                                             />
                                         </Grid>
                                     </Grid>
@@ -379,11 +386,11 @@ export default function Dashboard(props) {
                             Doctor roles can do this action:
                             <ul>
                                 <li>
-                                    See raw ECG data from a user in abnormal
+                                    See users ECG data from a user in abnormal
                                     data table
                                 </li>
                                 <li>
-                                    See classified ECG data from a user in
+                                    See users classified ECG data from a user in
                                     abnormal data table
                                 </li>
                                 <li>Search for all user classified ECG data</li>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -86,9 +87,27 @@ class DeviceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function updateBattery(Request $request, $id)
     {
-        //
+        $validator = Validator::make( $request->all(), [
+            'value' => 'required|integer|gte:0|lte:100',
+            ]);
+            
+            
+        if ($validator->fails()) 
+            return response()->json( [
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+
+        $device = User::find( $id )->device()->first();
+        $device->battery = $request->value;
+
+        if ( $device->save() ) 
+            return response()->json([
+                'status' => true,
+                'token' => 'The devices battery value has been updated.'
+            ]);
     }
 
     /**

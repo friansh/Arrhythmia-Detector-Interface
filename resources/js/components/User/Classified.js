@@ -6,16 +6,7 @@ import Cust_Table from "../App/Table";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-
 import LinearProgress from "@material-ui/core/LinearProgress";
-
-import Moment from "react-moment";
 
 import Axios from "axios";
 import { useCookies } from "react-cookie";

@@ -54,7 +54,7 @@ Route::group( [ 'prefix' => 'doctor' ], function() {
     Route::get('/messages', function() {
         return view('doctor.messages');
     });
-    Route::get('/raw/{id}', function( $id ){
+    Route::get('/ecg/{id}', function( $id ){
         return view('doctor.raw', [
             'user_id' => $id
         ]);
@@ -76,8 +76,8 @@ Route::group( [ 'prefix' => 'user' ], function() {
         return view('history');
     });
 
-    Route::get('/raw', function() {
-        return view('raw');
+    Route::get('/ecg', function() {
+        return view('ecg');
     });
 
     Route::get('/classified', function() {

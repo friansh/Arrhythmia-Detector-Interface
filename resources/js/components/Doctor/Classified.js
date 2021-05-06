@@ -38,6 +38,13 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
+function calculateAge(birthday) {
+    // birthday is a date
+    var ageDifMs = Date.now() - birthday.getTime();
+    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+}
+
 export default function Classified(props) {
     const classes = useStyles();
     const theme = useTheme();
@@ -47,6 +54,8 @@ export default function Classified(props) {
     const [classifiedData, setClassifiedData] = useState([]);
     const [patientName, setPatientName] = useState();
     const [patientAddress, setPatientAddress] = useState();
+    const [patientAge, setPatientAge] = useState();
+    const [patientGender, setPatientGender] = useState();
 
     useEffect(() => {
         console.log(props.userId);
@@ -56,22 +65,20 @@ export default function Classified(props) {
             }
         })
             .then(response => {
-                console.log(response.data.data);
                 setClassifiedData(response.data.data);
-                setPatientName(
-                    response.data.user.first_name +
-                        " " +
-                        response.data.user.last_name
-                );
+
+                const user = response.data.user;
+                setPatientName(`${user.first_name} ${user.last_name}`);
                 setPatientAddress(
-                    response.data.user.address +
-                        " " +
-                        response.data.user.city +
-                        " " +
-                        response.data.user.province +
-                        " " +
-                        response.data.user.country
+                    `${user.address} ${user.city} ${user.province} ${user.country}`
                 );
+                setPatientAge(calculateAge(new Date(user.birthday)));
+                setPatientGender(() => {
+                    if (user.gender == 1) return "Male";
+                    return "Female";
+                });
+
+                setClassifiedData(response.data.data);
             })
             .finally(loadDone);
     }, []);
@@ -99,7 +106,9 @@ export default function Classified(props) {
                     User Classified Data
                 </Typography>
                 <Paper style={{ padding: 12, marginBottom: 12 }}>
-                    <Typography variant="h5">{patientName}</Typography>
+                    <Typography variant="h5">
+                        {patientName} ({patientGender}, {patientAge} years old)
+                    </Typography>
                     <Typography variant="subtitle2">
                         {patientAddress}
                     </Typography>

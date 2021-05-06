@@ -3,22 +3,22 @@ services:
   app:
     build:
       args:
-        user: loakarya
+        user: arrhythmiadetectorinterface
         uid: 1000
       context: ./
       dockerfile: Dockerfile
-    image: loakarya
-    container_name: loakarya-app
+    image: arrhythmiadetectorinterface
+    container_name: arrhythmiadetectorinterface-app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./:/var/www
     networks:
-      - loakarya
+      - arrhythmiadetectorinterface
 
   db:
     image: mariadb:10.5
-    container_name: loakarya-db
+    container_name: arrhythmiadetectorinterface-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -28,13 +28,13 @@ services:
     volumes:
       - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
-      - loakarya
+      - arrhythmiadetectorinterface
     ports:
       - 9000:3306
 
   nginx:
     image: nginx:latest
-    container_name: loakarya-nginx
+    container_name: arrhythmiadetectorinterface-nginx
     restart: unless-stopped
     ports:
       - 8000:80
@@ -42,7 +42,23 @@ services:
       - ./:/var/www
       - ./docker-compose/nginx:/etc/nginx/conf.d
     networks:
-      - loakarya
+      - arrhythmiadetectorinterface
+
+  phpmyadmin:
+    image: phpmyadmin:5.1.0
+    container_name: arrhythmiadetectorinterface-phpmyadmin
+    restart: always
+    ports:
+      - 9090:80
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: arrhythmiadetectorinterface-db
+      PMA_PORT: 3306
+      PMA_USER: ${DB_USERNAME}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - arrhythmiadetectorinterface
+
 networks:
-  loakarya:
+  arrhythmiadetectorinterface:
     driver: bridge

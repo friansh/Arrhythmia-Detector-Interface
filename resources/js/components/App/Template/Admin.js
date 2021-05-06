@@ -17,20 +17,14 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import FaceIcon from "@material-ui/icons/Face";
 
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import PersonIcon from "@material-ui/icons/Person";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import GroupAddIcon from "@material-ui/icons/GroupAdd";
 import ContactsIcon from "@material-ui/icons/Contacts";
 import LocalHospitalIcon from "@material-ui/icons/LocalHospital";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
-import Button from "@material-ui/core/Button";
-
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-
-import { CookiesProvider } from "react-cookie";
-import { useCookies } from "react-cookie";
+import { CookiesProvider, useCookies } from "react-cookie";
 
 import Axios from "axios";
 const drawerWidth = 240;
@@ -195,19 +189,6 @@ export default function Template(props) {
                                 ? "Admin Dashboard"
                                 : props.title}
                         </Typography>
-                        <Button color="inherit" onClick={handleClick}>
-                            <AccountCircleIcon />
-                            {user.first_name + " " + user.last_name}
-                        </Button>
-                        <Menu
-                            id="simple-menu"
-                            anchorEl={anchorEl}
-                            keepMounted
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={logout}>Logout</MenuItem>
-                        </Menu>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -302,6 +283,15 @@ export default function Template(props) {
                                 <PersonIcon />
                             </ListItemIcon>
                             <ListItemText primary={"Profile"} />
+                        </ListItem>
+                    </List>
+                    <Divider />
+                    <List>
+                        <ListItem button onClick={logout}>
+                            <ListItemIcon>
+                                <ExitToAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={"Logout"} />
                         </ListItem>
                     </List>
                 </Drawer>
