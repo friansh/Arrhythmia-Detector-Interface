@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Template from "../App/Template/Doctor";
+import Cust_Table from "../App/Table";
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
-
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-
-import Moment from "react-moment";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import IconButton from "@material-ui/core/IconButton";
+import Button from "@material-ui/core/Button";
+
+import RefreshIcon from "@material-ui/icons/Refresh";
+import FirstPageIcon from "@material-ui/icons/FirstPage";
+import LastPageIcon from "@material-ui/icons/LastPage";
+import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import Axios from "axios";
 import { useCookies } from "react-cookie";
-
-import Classify from "../App/Classify";
 
 const useStyles = makeStyles(theme => ({
     infoCard: {
@@ -51,22 +52,34 @@ export default function Classified(props) {
 
     const [cookies, setCookie] = useCookies();
 
-    const [classifiedData, setClassifiedData] = useState([]);
+    const [classifiedData, setClassifiedData] = useState({ data: [] });
     const [patientName, setPatientName] = useState();
     const [patientAddress, setPatientAddress] = useState();
     const [patientAge, setPatientAge] = useState();
     const [patientGender, setPatientGender] = useState();
 
+    const [dataPerPage, setDataPerPage] = useState(20);
+    const [activePage, setActivePage] = useState();
+
+    const [loading, setLoading] = useState(true);
+    const [firstLoading, setFirstLoading] = useState(true);
+
     useEffect(() => {
-        console.log(props.userId);
-        Axios.get("/api/data/classified/" + props.userId, {
-            headers: {
-                Authorization: "Bearer " + cookies.token
+        loadActiveClassifieds(1, true);
+    }, []);
+
+    const loadActiveClassifieds = (page, first) => {
+        setLoading(true);
+        Axios.get(
+            `/api/data/classified/${props.userId}?data_per_page=${dataPerPage}&page=${page}`,
+            {
+                headers: {
+                    Authorization: "Bearer " + cookies.token
+                }
             }
-        })
+        )
             .then(response => {
                 setClassifiedData(response.data.data);
-
                 const user = response.data.user;
                 setPatientName(`${user.first_name} ${user.last_name}`);
                 setPatientAddress(
@@ -77,73 +90,150 @@ export default function Classified(props) {
                     if (user.gender == 1) return "Male";
                     return "Female";
                 });
-
-                setClassifiedData(response.data.data);
             })
-            .finally(loadDone);
-    }, []);
-
-    const [loading, setLoading] = useState(true);
-
-    const loadDone = () => {
-        setLoading(false);
+            .finally(() => {
+                setLoading(false);
+                if (first) setFirstLoading(false);
+            });
     };
 
-    if (loading)
-        return (
-            <Template>
-                <LinearProgress />
-            </Template>
-        );
-    else
-        return (
-            <Template title={"Classifier Result"} doctor={true}>
-                <Typography
-                    variant="h4"
-                    align={"center"}
-                    style={{ marginBottom: 12 }}
-                >
-                    User Classified Data
-                </Typography>
-                <Paper style={{ padding: 12, marginBottom: 12 }}>
-                    <Typography variant="h5">
-                        {patientName} ({patientGender}, {patientAge} years old)
-                    </Typography>
-                    <Typography variant="subtitle2">
-                        {patientAddress}
-                    </Typography>
-                </Paper>
-                <Paper style={{ padding: 12 }}>
-                    <TableContainer component={Paper}>
-                        <Table
-                            className={classes.table}
-                            aria-label="simple table"
+    const handleDataPerPageChange = event => {
+        setDataPerPage(event.target.value);
+    };
+
+    const handleDataPerPageSet = () => {
+        setActivePage(1);
+        loadActiveClassifieds(1);
+    };
+
+    const handleBeforePaginationClick = () => {
+        let activePageAfter = activePage - 1;
+        setActivePage(activePageAfter);
+        loadActiveClassifieds(activePageAfter);
+    };
+
+    const handleNextPaginationClick = () => {
+        let activePageAfter = activePage + 1;
+        setActivePage(activePageAfter);
+        loadActiveClassifieds(activePageAfter);
+    };
+
+    const handleFirstPaginationClick = () => {
+        setActivePage(1);
+        loadActiveClassifieds(1);
+    };
+
+    const handleLastPaginationClick = page => {
+        setActivePage(page);
+        loadActiveClassifieds(page);
+    };
+
+    return (
+        <Template title={"User Classified History"} doctor={true}>
+            <Paper style={{ padding: 12, marginBottom: 12 }}>
+                {firstLoading ? null : (
+                    <React.Fragment>
+                        <Typography variant="h6">
+                            {patientName} ({patientGender}, {patientAge} years
+                            old)
+                        </Typography>
+                        <Typography variant="body2">
+                            {patientAddress}
+                        </Typography>
+                    </React.Fragment>
+                )}
+            </Paper>
+
+            <Grid container style={{ marginTop: 10, marginBottom: 10 }}>
+                <Grid item xs={12} md={4}>
+                    <Paper style={{ padding: 10 }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                width: "100%"
+                            }}
                         >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Result</TableCell>
-                                    <TableCell align="right">
-                                        Date and Time
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {classifiedData.map(row => (
-                                    <TableRow key={row.id}>
-                                        <TableCell component="th" scope="row">
-                                            {Classify(row.result)}
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Moment>{row.created_at}</Moment>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Paper>
-            </Template>
-        );
+                            <Typography variant="subtitle1">
+                                Data per page:
+                            </Typography>
+                            <TextField
+                                variant="outlined"
+                                size="small"
+                                type="number"
+                                onChange={handleDataPerPageChange}
+                                value={dataPerPage}
+                                style={{ marginLeft: 5, maxWidth: "75px" }}
+                            />
+                            <IconButton
+                                color="primary"
+                                onClick={handleDataPerPageSet}
+                            >
+                                <RefreshIcon />
+                            </IconButton>
+                        </div>
+                    </Paper>
+                </Grid>
+                <Grid item xs={12} md style={{ marginTop: 10 }}>
+                    <div
+                        style={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "flex-end"
+                        }}
+                    >
+                        <ButtonGroup
+                            size="small"
+                            variant="contained"
+                            color="primary"
+                        >
+                            <Button onClick={handleFirstPaginationClick}>
+                                <FirstPageIcon />
+                            </Button>
+                            <Button onClick={handleBeforePaginationClick}>
+                                <NavigateBeforeIcon />
+                            </Button>
+                            <Button onClick={handleNextPaginationClick}>
+                                <NavigateNextIcon />
+                            </Button>
+
+                            <Button
+                                onClick={() =>
+                                    handleLastPaginationClick(
+                                        classifiedData.last_page
+                                    )
+                                }
+                            >
+                                <LastPageIcon />
+                            </Button>
+                        </ButtonGroup>
+                    </div>
+                    <div
+                        style={{
+                            display: "flex",
+                            width: "100%",
+                            justifyContent: "flex-end",
+                            marginTop: 5
+                        }}
+                    >
+                        <Typography variant="caption">
+                            Showing page {classifiedData.current_page} from
+                            total {classifiedData.last_page} pages with{" "}
+                            {classifiedData.per_page} data per page and listing
+                            data {classifiedData.from} to {classifiedData.to}{" "}
+                            from total {classifiedData.total} data.
+                        </Typography>
+                    </div>
+                </Grid>
+            </Grid>
+
+            {loading ? (
+                <LinearProgress />
+            ) : (
+                <Cust_Table column={2} data={classifiedData.data} />
+            )}
+        </Template>
+    );
 }
 
 let doctorClassified = document.getElementById("doctor-classified");

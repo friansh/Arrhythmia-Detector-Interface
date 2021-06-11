@@ -57,7 +57,9 @@ export default function Cust_Table(props) {
                                 <TableCell align="right">
                                     {props.columns[2]}
                                 </TableCell>
-                                <TableCell>{props.columns[3]}</TableCell>
+                                <TableCell align="right">
+                                    {props.columns[3]}
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -70,7 +72,7 @@ export default function Cust_Table(props) {
                                     <TableCell align="right">
                                         <Moment>{row.column3}</Moment>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell align="right">
                                         <ButtonGroup
                                             variant="contained"
                                             color="primary"
@@ -92,6 +94,15 @@ export default function Cust_Table(props) {
                                                 }
                                             >
                                                 {props.button[1].text}
+                                            </Button>
+                                            <Button
+                                                onClick={() =>
+                                                    (window.location.href =
+                                                        props.button[2].link +
+                                                        row.id)
+                                                }
+                                            >
+                                                {props.button[2].text}
                                             </Button>
                                         </ButtonGroup>
                                     </TableCell>

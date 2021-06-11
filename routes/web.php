@@ -51,14 +51,25 @@ Route::group( [ 'prefix' => 'doctor' ], function() {
     Route::get('/', function() {
         return view('doctor.dashboard');
     });
+
     Route::get('/messages', function() {
         return view('doctor.messages');
     });
+
+    Route::get('/history/{id}', function( $id ) {
+        return view('doctor.history', [
+            'user_id' => $id
+        ]);
+    });
+
+
     Route::get('/ecg/{id}', function( $id ){
         return view('doctor.raw', [
             'user_id' => $id
         ]);
     });
+
+
     Route::get('/classified/{id}', function( $id ) {
         return view('doctor.classified', [
             'user_id' => $id

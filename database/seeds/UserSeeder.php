@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
         factory(App\User::class, 10)->create()->each(function ($user) {
             $user->device()->save( factory( App\Device::class )->make() );
             $user->doctor()->save( factory( App\Doctor::class )->make() );
-            $user->raws()->saveMany( factory( App\Raw::class, 200 )->make() );
+            $user->raws()->saveMany( factory( App\Raw::class, 3000 )->make() );
             $user->classifieds()->saveMany( factory( App\Classified::class, 20 )->make() );
         });
     }

@@ -19,6 +19,7 @@ require("./components/Doctor/Dashboard");
 require("./components/Doctor/ECG");
 require("./components/Doctor/Classified");
 require("./components/Doctor/Messages");
+require("./components/Doctor/History");
 
 require("./components/Admin/Dashboard");
 require("./components/Admin/Promote");

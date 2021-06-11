@@ -102,10 +102,9 @@ export default function Profile() {
     const [messageSeverity, setMessageSeverity] = useState("success");
 
     const handleUpdate = () => {
-        Axios.post(
+        Axios.patch(
             "/api/user",
             {
-                _method: "PATCH",
                 birthday: moment(birthday).format(),
                 first_name: firstName,
                 last_name: lastName,
@@ -121,18 +120,18 @@ export default function Profile() {
                     Authorization: "Bearer " + cookies.token
                 }
             }
-        ).then(response => {
-            console.log(response.data);
-            if (response.data.status) {
+        )
+            .then(response => {
                 setMessageContent("The users profile has been updated.");
                 setMessageSeverity("success");
                 setUpdatedAlert(true);
-            } else {
+            })
+            .catch(error => {
+                console.error(error.response);
                 setMessageContent("Failed to update user details.");
                 setMessageSeverity("error");
                 setUpdatedAlert(true);
-            }
-        });
+            });
     };
 
     useEffect(() => {
@@ -228,7 +227,7 @@ export default function Profile() {
 
     if (loading)
         return (
-            <Template>
+            <Template title={"Profile"}>
                 <LinearProgress />
             </Template>
         );

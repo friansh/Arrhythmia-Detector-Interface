@@ -230,7 +230,6 @@ export default function Template(props) {
                     <List>
                         <ListItem
                             button
-                            key={"Dashboard"}
                             onClick={() => (window.location.href = "/doctor")}
                         >
                             <ListItemIcon>
@@ -238,13 +237,8 @@ export default function Template(props) {
                             </ListItemIcon>
                             <ListItemText primary={"Dashboard"} />
                         </ListItem>
-                    </List>
-                    <Divider />
-
-                    <List>
                         <ListItem
                             button
-                            key={"Message"}
                             onClick={() =>
                                 (window.location.href = "/doctor/messages")
                             }
@@ -257,12 +251,13 @@ export default function Template(props) {
                                     <WarningIcon />
                                 </Badge>
                             </ListItemIcon>
-                            <ListItemText primary="Abnormal Data" />
+                            <ListItemText primary="Arrhythmia" />
                         </ListItem>
-
+                    </List>
+                    <Divider />
+                    <List>
                         <ListItem
                             button
-                            key={"Regular User Panel"}
                             onClick={() => (window.location.href = "/user")}
                         >
                             <ListItemIcon>
@@ -272,7 +267,6 @@ export default function Template(props) {
                         </ListItem>
                         <ListItem
                             button
-                            key={"Profile"}
                             onClick={() =>
                                 (window.location.href = "/user/profile")
                             }

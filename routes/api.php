@@ -33,7 +33,6 @@ Route::group( [ 'prefix' => 'data', 'middleware' => 'auth' ], function() {
 
 Route::group( [ 'middleware' => 'doctor' ], function() {
     Route::get('/user', 'UserController@index');
-    Route::patch('/user', 'UserController@update');
     Route::post('/user/search', 'UserController@search');
     Route::get('/data/raw/{id}', 'RawController@showUser');
     Route::get('/data/classified/{id}', 'ClassifiedController@showUser');
@@ -42,19 +41,23 @@ Route::group( [ 'middleware' => 'doctor' ], function() {
 });
 
 Route::group( [ 'middleware' => 'admin', 'prefix' => 'admin' ], function() {
-    Route::get('/dashboard', 'UserController@adminDashboard');
     Route::get('/doctor', 'UserController@indexDoctor');
+    Route::get('/doctor/search', 'UserController@searchDoctor');
+    Route::get('/doctor/{id}', 'UserController@showDoctor');
     Route::delete('/doctor/{id}', 'UserController@rejectDoctorApplicant');
+    Route::get('/dashboard', 'UserController@adminDashboard');
     Route::post('/promote/{id}', 'UserController@promote');
     Route::post('/demote/{id}', 'UserController@demote');
     Route::get('/applicant', 'UserController@indexDoctorApplicant');
+    Route::get('/applicant/search', 'UserController@searchDoctorApplicant');
+    Route::get('/user/search', 'UserController@search');
     Route::get('/user/{id}', 'UserController@show');
     Route::delete('/user/{id}', 'UserController@destroy');
-    Route::get('/doctor/{id}', 'UserController@showDoctor');
 });
 
 Route::group( [ 'middleware' => 'auth' ], function() {
     Route::patch( '/password', 'UserController@changePassword');
+    Route::patch('/user', 'UserController@update');
     Route::put( '/doctor', 'UserController@applyDoctor');
     Route::get( '/active', 'UserController@active' );
     Route::get( '/device', 'DeviceController@index' );

@@ -238,9 +238,7 @@ export default function Template(props) {
                         <ListItem
                             button
                             onClick={() =>
-                                (window.location.href =
-                                    "/admin/manage/doctor?token=" +
-                                    cookies.token)
+                                (window.location.href = "/admin/manage/doctor")
                             }
                         >
                             <ListItemIcon>

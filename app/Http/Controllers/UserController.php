@@ -12,6 +12,7 @@ use App\Doctor;
 use App\Device;
 use App\User;
 use App\Raw;
+use PhpParser\Comment\Doc;
 
 class UserController extends Controller
 {
@@ -51,14 +52,17 @@ class UserController extends Controller
         ] );
     }
 
-    public function indexDoctorApplicant() {
-        $applicant = Doctor::where('verified', false)->with('user')->get();
-        return response()->json(['status' => true, 'data' => $applicant]);
+    public function indexDoctorApplicant(Request $request) {
+        $applicant = Doctor::where('verified', false)->join('users', 'doctors.user_id', '=', 'users.id');
+        
+        if ( $request->has('data_per_page') )
+            return $applicant->paginate( $request->data_per_page );
+        else
+            return $applicant->get();
     }
 
     public function doctorDashboard() {
         $activeUser = User::find( Auth::id() );
-        $userFullName = $activeUser->first_name . ' ' . $activeUser->last_name;
 
         return response()->json( [
             'summary' => [
@@ -71,7 +75,6 @@ class UserController extends Controller
 
     public function adminDashboard() {
         $activeUser = User::find( Auth::id() );
-        $userFullName = $activeUser->first_name . ' ' . $activeUser->last_name;
 
         return response()->json( [
             'summary' => [
@@ -85,9 +88,48 @@ class UserController extends Controller
     }
 
     public function search( Request $request ) {
-        return User::where('first_name', 'like', $request->first_name . '%')
-                    ->where('last_name', 'like', $request->last_name . '%')
-                    ->get();
+        if ( $request->has('data_per_page') )
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->paginate($request->data_per_page );
+        else
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->get();
+    }
+
+    public function searchDoctor( Request $request ) {
+        if ( $request->has('data_per_page') )
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                        ->where('doctors.verified', true)
+                        ->paginate( $request->data_per_page );
+        else
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                        ->where('doctors.verified', true)
+                        ->get();
+
+        
+    }
+
+    public function searchDoctorApplicant( Request $request ) {
+        if ( $request->has('data_per_page') )
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                        ->where('doctors.verified', false)
+                        ->paginate( $request->data_per_page );
+        else
+            return User::where('first_name', 'like', $request->first_name . '%')
+                        ->where('last_name', 'like', $request->last_name . '%')
+                        ->join('doctors', 'users.id', '=', 'doctors.user_id')
+                        ->where('doctors.verified', false)
+                        ->get();
+
+        
     }
 
     /**
@@ -103,9 +145,14 @@ class UserController extends Controller
             return User::all();
     }
 
-    public function indexDoctor() {
-        $applicant = Doctor::where('verified', true)->with('user')->get();
-        return response()->json(['status' => true, 'data' => $applicant]);
+    public function indexDoctor(Request $request) {
+        $doctor = Doctor::where('verified', true)->join('users', 'doctors.user_id', '=', 'users.id');
+
+        if ( $request->has('data_per_page') )
+            return $doctor->paginate( $request->data_per_page );
+        else
+            return $doctor->get();
+
     }
 
     public function changePassword( Request $request ) {
@@ -370,6 +417,11 @@ class UserController extends Controller
     public function destroy($id)
     {
         $u = User::find( $id );
+
+        Raw::where('user_id', $u->id)->delete();
+        Classified::where('user_id', $u->id)->delete();
+        Doctor::where('user_id', $u->id)->delete();
+        
         if ( $u->delete() ) 
             return response()->json( [
                 'status' => true,

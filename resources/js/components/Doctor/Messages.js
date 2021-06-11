@@ -6,10 +6,11 @@ import Cust_Table from "../App/Table";
 import Classify from "../App/Classify";
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
 import TimelineIcon from "@material-ui/icons/Timeline";
 import DonutLargeIcon from "@material-ui/icons/DonutLarge";
+import DateRangeIcon from "@material-ui/icons/DateRange";
 
 import Axios from "axios";
 import { useCookies } from "react-cookie";
@@ -36,31 +37,40 @@ export default function Messages() {
 
     const [cookies, setCookie] = useCookies();
     const [classifiedData, setClassifiedData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         Axios.get("/api/abnormal", {
             headers: {
                 Authorization: "Bearer " + cookies.token
             }
-        }).then(response => {
-            let buffer = [];
-            response.data.data.map(d => {
-                buffer.push({
-                    id: d.user.id,
-                    column1: d.user.name,
-                    column2: Classify(d.classified.result),
-                    column3: d.classified.created_at
+        })
+            .then(response => {
+                let buffer = [];
+                response.data.data.map(d => {
+                    buffer.push({
+                        id: d.user.id,
+                        column1: d.user.name,
+                        column2: Classify(d.classified.result),
+                        column3: d.classified.created_at
+                    });
                 });
-            });
 
-            console.log(buffer);
-            setClassifiedData(buffer);
-        });
+                console.log(buffer);
+                setClassifiedData(buffer);
+            })
+            .finally(() => setLoading(false));
     }, []);
 
-    return (
-        <Template title={"User EKG Anomaly Report"}>
-            <Paper style={{ padding: 12 }}>
+    if (loading)
+        return (
+            <Template title={"User ECG Anomaly Report"}>
+                <LinearProgress />
+            </Template>
+        );
+    else
+        return (
+            <Template title={"User ECG Anomaly Report"}>
                 <Cust_Table
                     column={4}
                     data={classifiedData}
@@ -69,13 +79,16 @@ export default function Messages() {
                         {
                             text: <DonutLargeIcon />,
                             link: "/doctor/classified/"
+                        },
+                        {
+                            text: <DateRangeIcon />,
+                            link: "/doctor/history/"
                         }
                     ]}
                     columns={["Name", "Result", "Date and Time", "View"]}
                 />
-            </Paper>
-        </Template>
-    );
+            </Template>
+        );
 }
 
 if (document.getElementById("doctor-messages")) {

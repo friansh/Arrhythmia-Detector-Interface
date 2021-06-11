@@ -133,14 +133,7 @@ export default function Raw(props) {
     };
 
     return (
-        <Template title={"User ECG"}>
-            <Typography
-                variant="h4"
-                align={"center"}
-                style={{ marginBottom: 12 }}
-            >
-                User Electrocardiogram Data
-            </Typography>
+        <Template title={"User Electrocardiogram Data"}>
             {loading ? null : (
                 <Paper style={{ padding: 12, marginBottom: 12 }}>
                     <Typography variant="h5">
@@ -221,17 +214,8 @@ export default function Raw(props) {
                             },
                             title: {
                                 display: true,
-                                text: "ECG Raw Data History"
+                                text: "ECG Data Graph"
                             },
-                            // scales: {
-                            //     xAxes: [
-                            //         {
-                            //             ticks: {
-                            //                 display: false
-                            //             }
-                            //         }
-                            //     ]
-                            // },
                             elements: {
                                 point: {
                                     radius: 0

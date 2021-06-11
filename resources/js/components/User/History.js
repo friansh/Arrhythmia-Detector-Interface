@@ -106,7 +106,7 @@ export default function History() {
 
     if (loading)
         return (
-            <Template>
+            <Template title={"Detection History"}>
                 <LinearProgress />
             </Template>
         );

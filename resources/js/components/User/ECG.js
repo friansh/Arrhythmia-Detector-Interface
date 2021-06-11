@@ -111,7 +111,7 @@ export default function Raw() {
     const [loading, setLoading] = useState(true);
 
     return (
-        <Template title={"ECG Data"}>
+        <Template title={"Electrocardiogram Data"}>
             <Paper style={{ padding: 12, marginBottom: 10 }}>
                 <Typography variant="subtitle1">Select time window:</Typography>
                 <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -182,7 +182,7 @@ export default function Raw() {
                             },
                             title: {
                                 display: true,
-                                text: "ECG Data History"
+                                text: "ECG Data Graph"
                             },
                             elements: {
                                 point: {
