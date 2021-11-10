@@ -437,6 +437,7 @@ class UserController extends Controller
         $validator = Validator::make( $request->all(), [
             'password' => 'required',
             'birthday' => 'required|date',
+            'gender' => 'required|boolean',
             'email' => 'required|email|unique:users,email',
             'first_name' => 'required|max:20',
             'last_name' => 'required|max:50',
@@ -463,6 +464,7 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->province = $request->province;
         $user->country = $request->country;
+        $user->gender = $request->gender;
 
         $birthday = new \DateTime($request->birthday);
         $user->birthday = $birthday->format('Y-m-d H:i:s');
