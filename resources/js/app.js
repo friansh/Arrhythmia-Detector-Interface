@@ -28,6 +28,7 @@ require("./components/Admin/ManageDoctor");
 
 require("./components/User/History");
 require("./components/User/ECG");
+require("./components/User/Live");
 require("./components/User/Classified");
 
 require("./components/SignIn");

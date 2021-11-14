@@ -91,6 +91,10 @@ Route::group( [ 'prefix' => 'user' ], function() {
         return view('ecg');
     });
 
+    Route::get('/live', function() {
+        return view('live');
+    });
+
     Route::get('/classified', function() {
         return view('classified');
     });
