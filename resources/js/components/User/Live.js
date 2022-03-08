@@ -76,7 +76,7 @@ export default function LivePage(props) {
     );
 
     useEffect(() => {
-        const socket = io.connect("http://localhost:7999");
+        const socket = io.connect("https://live-socket.ecgunpad.com");
         console.log("connected to socket io");
         socket.on("ceksocketio", data => {
             const ecgData = JSON.parse(data);
