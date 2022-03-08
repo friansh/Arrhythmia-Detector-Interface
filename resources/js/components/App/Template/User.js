@@ -25,6 +25,7 @@ import ShowChartIcon from "@material-ui/icons/ShowChart";
 import PersonIcon from "@material-ui/icons/Person";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import TapAndPlayIcon from "@material-ui/icons/TapAndPlay";
 
 import { CookiesProvider, useCookies } from "react-cookie";
 
@@ -252,6 +253,18 @@ export default function Template(props) {
                                     <DateRangeIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={"History"} />
+                            </ListItem>
+                            <ListItem
+                                button
+                                key={"Live"}
+                                onClick={() =>
+                                    (window.location.href = "/user/live")
+                                }
+                            >
+                                <ListItemIcon>
+                                    <TapAndPlayIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={"Live"} />
                             </ListItem>
                         </React.Fragment>
                     </List>
