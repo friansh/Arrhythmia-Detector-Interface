@@ -78,20 +78,18 @@ export default function LivePage(props) {
     useEffect(() => {
         const socket = io.connect("https://live-socket.ecgunpad.com");
         console.log("connected to socket io");
-        socket.on("ceksocketio", data => {
-            const ecgData = JSON.parse(data);
-            setYChart(ecgData);
+        socket.on("ecganalysis", data => {
+            const ecgAnalysis = JSON.parse(data);
+
+            setYChart(ecgAnalysis.ecg_graph);
 
             let index = [];
-            for (let i = 0; i < ecgData.length; i++) {
+            for (let i = 0; i < ecgAnalysis.ecg_graph.length; i++) {
                 index.push(i + 1);
             }
 
             setXChart(index);
-            console.log(ecgData);
-        });
-        socket.on("ecganalysis", data => {
-            const ecgAnalysis = JSON.parse(data);
+
             setSegmentAnalysis({
                 rr: {
                     val: ecgAnalysis.rr_avg,
