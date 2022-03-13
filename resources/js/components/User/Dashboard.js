@@ -45,36 +45,36 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function classify(num) {
-    switch (num) {
-        case 0:
-            return "Normal (NOR)";
+// function classify(num) {
+//     switch (num) {
+//         case 0:
+//             return "Normal (NOR)";
 
-        case 1:
-            return "Premature Ventricular Contraction Beat (PVC)";
+//         case 1:
+//             return "Premature Ventricular Contraction Beat (PVC)";
 
-        case 2:
-            return "Paced Beat (PAB)";
+//         case 2:
+//             return "Paced Beat (PAB)";
 
-        case 3:
-            return "Right Bundle Branch Block Beat (RBB)";
+//         case 3:
+//             return "Right Bundle Branch Block Beat (RBB)";
 
-        case 4:
-            return "Left Bundle Branch Block Beat (LBB)";
+//         case 4:
+//             return "Left Bundle Branch Block Beat (LBB)";
 
-        case 5:
-            return "Atrial Premature Contraction Beat (APC)";
+//         case 5:
+//             return "Atrial Premature Contraction Beat (APC)";
 
-        case 6:
-            return "Ventricular Flutter Wave (VFW)";
+//         case 6:
+//             return "Ventricular Flutter Wave (VFW)";
 
-        case 7:
-            return "Premature Ventricular Contraction Beat (VEB)";
+//         case 7:
+//             return "Premature Ventricular Contraction Beat (VEB)";
 
-        default:
-            return "Unknown";
-    }
-}
+//         default:
+//             return "Unknown";
+//     }
+// }
 
 function calculateAge(birthday) {
     // birthday is a date
@@ -112,7 +112,9 @@ export default function Dashboard(props) {
             });
             setBattery(response.data.battery.battery);
             setLastRawData(response.data.lastData.created_at);
-            setLastClassifiedData(response.data.condition.result);
+            setLastClassifiedData(
+                response.data.condition.classification_result
+            );
             setRawDataSummary(response.data.dataSummary);
             setClassifiedDataSummary(response.data.conditionSummary);
             setLoading(false);
@@ -203,7 +205,7 @@ export default function Dashboard(props) {
                                 </Grid>
                             </Grid>
                             <Typography variant="subtitle2">
-                                {classify(lastClassifiedData)}
+                                {lastClassifiedData}
                             </Typography>
                         </Paper>
                     </Grid>
@@ -264,7 +266,7 @@ export default function Dashboard(props) {
                                                     component="th"
                                                     scope="row"
                                                 >
-                                                    {classify(row.result)}
+                                                    {row.classification_result}
                                                 </TableCell>
                                                 <TableCell align="right">
                                                     <Moment>

@@ -87,8 +87,10 @@ Route::group( [ 'prefix' => 'user' ], function() {
         return view('history');
     });
 
-    Route::get('/ecg', function() {
-        return view('ecg');
+    Route::get('/ecg/{id}', function( $id ) {
+        return view('ecg',[
+            'user_id' => $id
+        ]);
     });
 
     Route::get('/live', function() {

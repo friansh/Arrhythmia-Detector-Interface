@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Template from "../App/Template/User";
-import Cust_Table from "../App/Table";
 
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -11,6 +10,14 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
+import Link from "@material-ui/core/Button";
+
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 
 import RefreshIcon from "@material-ui/icons/Refresh";
 import FirstPageIcon from "@material-ui/icons/FirstPage";
@@ -22,6 +29,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 
 import Axios from "axios";
 import { useCookies } from "react-cookie";
+
+import Moment from "react-moment";
 
 const useStyles = makeStyles(theme => ({
     infoCard: {
@@ -57,9 +66,6 @@ export default function Classified() {
 
     const loadActiveClassifieds = page => {
         setLoading(true);
-        console.log(
-            `/api/data/classified?data_per_page=${dataPerPage}&page=${page}`
-        );
         Axios.get(
             `/api/data/classified?data_per_page=${dataPerPage}&page=${page}`,
             {
@@ -69,8 +75,7 @@ export default function Classified() {
             }
         )
             .then(response => {
-                setClassifiedData(response.data);
-                // console.table(response.data.data);
+                setClassifiedData(response.data.data);
             })
             .finally(() => setLoading(false));
     };
@@ -193,7 +198,40 @@ export default function Classified() {
             {loading ? (
                 <LinearProgress />
             ) : (
-                <Cust_Table column={2} data={classifiedData.data} />
+                // <Cust_Table column={2} data={classifiedData.data} />
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Result</TableCell>
+                                <TableCell align="right">
+                                    Date and Time
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {classifiedData.map((cd, index) => {
+                                return (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row">
+                                            <Link
+                                                href={`/user/ecg/${cd.id}`}
+                                                style={{
+                                                    color: "#1769aa"
+                                                }}
+                                            >
+                                                {cd.classification_result}
+                                            </Link>
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Moment>{cd.created_at}</Moment>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             )}
         </Template>
     );

@@ -218,7 +218,7 @@ export default function Template(props) {
                             <ListItemText primary={"Dashboard"} />
                         </ListItem>
                         <React.Fragment>
-                            <ListItem
+                            {/* <ListItem
                                 button
                                 key={"Raw Data"}
                                 onClick={() =>
@@ -229,7 +229,7 @@ export default function Template(props) {
                                     <ShowChartIcon />
                                 </ListItemIcon>
                                 <ListItemText primary={"ECG Data"} />
-                            </ListItem>
+                            </ListItem> */}
                             <ListItem
                                 button
                                 key={"Classifier Result"}

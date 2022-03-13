@@ -9,20 +9,16 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-import RefreshIcon from "@material-ui/icons/Refresh";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 
 import { Line } from "react-chartjs-2";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
-
-import moment from "moment";
-
-import MomentUtils from "@date-io/moment";
-import {
-    MuiPickersUtilsProvider,
-    KeyboardDatePicker,
-    KeyboardTimePicker
-} from "@material-ui/pickers";
 
 const useStyles = makeStyles(theme => ({
     infoCard: {
@@ -40,163 +36,227 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export default function Raw() {
+export default function Raw(props) {
     const classes = useStyles();
     const theme = useTheme();
 
     const [cookies, setCookie] = useCookies();
 
-    const [date, setDate] = useState(() => {
-        let dateW = new Date();
-        return moment(dateW).format("YYYY-MM-DD");
+    const [segmentAnalysis, setSegmentAnalysis] = useState({
+        rr: {
+            val: 0,
+            stdev: 0
+        },
+        pr: {
+            val: 0,
+            stdev: 0
+        },
+        qs: {
+            val: 0,
+            stdev: 0
+        },
+        qt: {
+            val: 0,
+            stdev: 0
+        },
+        st: {
+            val: 0,
+            stdev: 0
+        }
     });
 
-    const [startTime, setStartTime] = useState(() => {
-        let startTimeW = new Date();
-        startTimeW.setMinutes(startTimeW.getMinutes() - 10);
-
-        return moment(startTimeW).format("HH:mm:ss");
-    });
-
-    const [endTime, setEndTime] = useState(() => {
-        let endTimeW = new Date();
-
-        return moment(endTimeW).format("HH:mm:ss");
-    });
+    const [heartrate, setHeartrate] = useState(0);
+    const [classificationResult, setClassificationResult] = useState(
+        "unknown data"
+    );
 
     const [yChart, setYChart] = useState([]);
     const [xChart, setXChart] = useState([]);
 
     useEffect(() => {
-        loadECGData();
-    }, []);
-
-    const loadECGData = () => {
-        console.log(
-            `/api/data/raw?date=${date}&start_time=${startTime}&end_time=${endTime}`
-        );
-        Axios.get(
-            `/api/data/raw?date=${date}&start_time=${startTime}&end_time=${endTime}`,
-            {
-                headers: {
-                    Authorization: "Bearer " + cookies.token
-                }
+        Axios.get(`/api/data/classified/raw/${props.classifiedId}`, {
+            headers: {
+                Authorization: "Bearer " + cookies.token
             }
-        )
+        })
             .then(response => {
-                let rawData = [];
                 let rawTime = [];
-                response.data.map(d => {
-                    rawData.push(d.data);
-                    rawTime.push(moment(d.created_at).format("HH:mm:ss"));
-                });
-                setYChart(rawData);
+
+                for (let i = 0; i < response.data.ecg.length; i++) {
+                    rawTime.push(i + 1);
+                }
+                setYChart(response.data.ecg);
                 setXChart(rawTime);
+
+                setSegmentAnalysis({
+                    rr: {
+                        val: response.data.analysis.rr,
+                        stdev: response.data.analysis.rr_stdev
+                    },
+                    pr: {
+                        val: response.data.analysis.pr,
+                        stdev: response.data.analysis.pr_stdev
+                    },
+                    qs: {
+                        val: response.data.analysis.qs,
+                        stdev: response.data.analysis.qs_stdev
+                    },
+                    qt: {
+                        val: response.data.analysis.qt,
+                        stdev: response.data.analysis.qt_stdev
+                    },
+                    st: {
+                        val: response.data.analysis.st,
+                        stdev: response.data.analysis.st_stdev
+                    }
+                });
+
+                setHeartrate(response.data.analysis.heartrate);
+                setClassificationResult(
+                    response.data.analysis.classification_result
+                );
             })
             .finally(() => setLoading(false));
-    };
-
-    const handleStartTimeChange = time => {
-        setStartTime(moment(time).format("HH:mm:ss"));
-    };
-
-    const handleEndTimeChange = time => {
-        setEndTime(moment(time).format("HH:mm:ss"));
-    };
-
-    const handleDateChange = date => {
-        setDate(moment(date).format("YYYY-MM-DD"));
-    };
+    }, []);
 
     const [loading, setLoading] = useState(true);
 
     return (
         <Template title={"Electrocardiogram Data"}>
-            <Paper style={{ padding: 12, marginBottom: 10 }}>
-                <Typography variant="subtitle1">Select time window:</Typography>
-                <MuiPickersUtilsProvider utils={MomentUtils}>
-                    <KeyboardDatePicker
-                        format="DD/MM/yyyy"
-                        margin="dense"
-                        label="Date"
-                        style={{ marginRight: 10 }}
-                        value={new Date(date)}
-                        onChange={handleDateChange}
-                    />
-                    <KeyboardTimePicker
-                        margin="dense"
-                        label="Start Time"
-                        views={["hours", "minutes", "seconds"]}
-                        format="HH:mm:ss"
-                        style={{ marginRight: 10 }}
-                        value={new Date(`2000-01-01:${startTime}`)}
-                        onChange={handleStartTimeChange}
-                    />
-                    <KeyboardTimePicker
-                        margin="dense"
-                        label="End Time"
-                        views={["hours", "minutes", "seconds"]}
-                        format="HH:mm:ss"
-                        value={new Date(`2000-01-01:${endTime}`)}
-                        onChange={handleEndTimeChange}
-                    />
-                </MuiPickersUtilsProvider>
-                <div
-                    style={{
-                        height: "100%",
-                        display: "flex",
-                        alignContent: "flex-end"
-                    }}
-                >
-                    <Button
-                        startIcon={<RefreshIcon />}
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        style={{ marginTop: 10 }}
-                        onClick={loadECGData}
-                    >
-                        Refresh
-                    </Button>
-                </div>
-            </Paper>
-            {loading ? (
-                <LinearProgress />
-            ) : (
-                <Paper style={{ padding: 12 }}>
-                    <Line
-                        data={{
-                            labels: xChart,
-                            datasets: [
-                                {
-                                    data: yChart,
-                                    lineTension: 0,
-                                    borderColor: "#ba000d",
-                                    fill: false
-                                }
-                            ]
-                        }}
-                        options={{
-                            legend: {
-                                display: false
-                            },
-                            title: {
-                                display: true,
-                                text: "ECG Data Graph"
-                            },
-                            elements: {
-                                point: {
-                                    radius: 0
-                                }
+            {loading ? <LinearProgress /> : null}
+
+            <Paper style={{ padding: 12, marginBottom: 20 }}>
+                <Line
+                    data={{
+                        labels: xChart,
+                        datasets: [
+                            {
+                                data: yChart,
+                                lineTension: 0,
+                                borderColor: "#ba000d",
+                                fill: false
                             }
-                        }}
-                    />
-                </Paper>
-            )}
+                        ]
+                    }}
+                    options={{
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "ECG Data Graph"
+                        },
+                        elements: {
+                            point: {
+                                radius: 0
+                            }
+                        }
+                    }}
+                />
+            </Paper>
+
+            <TableContainer component={Paper} style={{ marginBottom: 20 }}>
+                <Table className={classes.table} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Segment</TableCell>
+                            <TableCell align="right">Interval (ms)</TableCell>
+                            <TableCell align="right">Stdev</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                RR
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.rr.val}
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.rr.stdev}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                PR
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.pr.val}
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.pr.stdev}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                QS
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.qs.val}
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.qs.stdev}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                QT
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.qt.val}
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.qt.stdev}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                ST
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.st.val}
+                            </TableCell>
+                            <TableCell align="right">
+                                {segmentAnalysis.st.stdev}
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TableContainer component={Paper}>
+                <Table className={classes.table} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Parameter</TableCell>
+                            <TableCell align="right">Result</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                Heartrate
+                            </TableCell>
+                            <TableCell align="right">{heartrate}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell component="th" scope="row">
+                                Classification Result
+                            </TableCell>
+                            <TableCell align="right">
+                                {classificationResult}
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Template>
     );
 }
 
-if (document.getElementById("ecg")) {
-    ReactDOM.render(<Raw />, document.getElementById("ecg"));
+let userEcg = document.getElementById("ecg");
+if (userEcg) {
+    ReactDOM.render(
+        <Raw classifiedId={userEcg.dataset.classifiedId} />,
+        userEcg
+    );
 }

@@ -27,6 +27,7 @@ Route::group([ 'middleware' => 'api', 'prefix' => 'auth' ], function ($router) {
 
 Route::group( [ 'prefix' => 'data', 'middleware' => 'auth' ], function() {
     Route::get('/dashboard', 'UserController@userDashboard');
+    Route::get('/classified/raw/{id}', 'ClassifiedController@getRaws');
     Route::get('/classified', 'ClassifiedController@index');
     Route::get('/raw', 'RawController@index');
 });
