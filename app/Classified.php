@@ -9,4 +9,8 @@ class Classified extends Model
     public function user() {
         return $this->belongsTo('App\User');
     }
+
+    public function raws() {
+        return $this->hasMany('App\Raw');
+    }
 }

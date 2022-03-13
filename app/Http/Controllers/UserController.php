@@ -25,19 +25,19 @@ class UserController extends Controller
         $activeUser = User::find( Auth::id() );
 
         $userFullName = $activeUser->first_name . ' ' . $activeUser->last_name;
-        $lastData = $activeUser->raws()->select('id', 'user_id', 'created_at')->orderBy('created_at', 'desc')->first();
-        $condition = $activeUser->classifieds()->select('id', 'user_id', 'result')->orderBy('created_at', 'desc')->first();
+        $lastData = $activeUser->classifieds()->select('id', 'user_id', 'created_at')->orderBy('created_at', 'desc')->first();
+        $condition = $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->orderBy('created_at', 'desc')->first();
         $battery = $activeUser->device()->select('id', 'user_id', 'battery')->first();
-        $dataSummary = $activeUser->classifieds()->select('id', 'user_id', 'result')->orderBy('created_at', 'desc')->take(10)->get();
+        $dataSummary = $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->orderBy('created_at', 'desc')->take(10)->get();
         $conditionSummary = [
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 0)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 1)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 2)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 3)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 4)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 5)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 6)->count(),
-            $activeUser->classifieds()->select('id', 'user_id', 'result')->where('result', 7)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 0)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 1)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 2)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 3)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 4)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 5)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 6)->count(),
+            $activeUser->classifieds()->select('id', 'user_id', 'classification_result')->where('classification_result', 7)->count(),
         ];
 
         return response()->json( [

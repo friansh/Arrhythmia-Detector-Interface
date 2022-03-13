@@ -60,10 +60,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    
-    public function raws() {
-        return $this->hasMany('App\Raw');
-    }
 
     public function classifieds() {
         return $this->hasMany('App\Classified')->orderBy('created_at', 'desc');

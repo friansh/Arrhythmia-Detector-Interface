@@ -15,9 +15,8 @@ class CreateRawsTable extends Migration
     {
         Schema::create('raws', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id');
+            $table->foreignId('classified_id');
             $table->float('data');
-            $table->timestamps();
         });
     }
 
