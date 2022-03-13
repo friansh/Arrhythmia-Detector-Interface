@@ -164,4 +164,15 @@ class ClassifiedController extends Controller
     {
         //
     }
+
+    public function getRaws(Request $request, $id) {
+        $result = [];
+        foreach (Classified::find( $id )->raws()->get() as $r) {
+            array_push($result, $r->data);
+        }
+        return response()->json([
+            'analysis' => Classified::find( $id )->get()->first(),
+            'ecg' => $result
+        ]);
+    }
 }
