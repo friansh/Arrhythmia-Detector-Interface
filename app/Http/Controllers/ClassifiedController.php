@@ -171,7 +171,7 @@ class ClassifiedController extends Controller
             array_push($result, $r->data);
         }
         return response()->json([
-            'analysis' => Classified::find( $id )->get()->first(),
+            'analysis' => Classified::find( $id ),
             'ecg' => $result
         ]);
     }
