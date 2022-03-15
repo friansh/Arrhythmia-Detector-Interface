@@ -74,6 +74,7 @@ export default function Raw(props) {
     const [xChart, setXChart] = useState([]);
 
     useEffect(() => {
+        console.log(`/api/data/classified/raw/${props.classifiedId}`);
         Axios.get(`/api/data/classified/raw/${props.classifiedId}`, {
             headers: {
                 Authorization: "Bearer " + cookies.token
