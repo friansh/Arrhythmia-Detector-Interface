@@ -5,8 +5,8 @@ object-assign
 */
 
 /*!
-  * Bootstrap v4.5.3 (https://getbootstrap.com/)
-  * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
+  * Bootstrap v4.6.0 (https://getbootstrap.com/)
+  * Copyright 2011-2021 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 
@@ -18,7 +18,7 @@ object-assign
  */
 
 /*!
- * Pusher JavaScript Library v7.0.0
+ * Pusher JavaScript Library v7.0.2
  * https://pusher.com/
  *
  * Copyright 2020, Pusher
@@ -34,6 +34,13 @@ object-assign
  * https://js.foundation/
  *
  * Date: 2020-03-14
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
  */
 
 /*!
@@ -67,6 +74,8 @@ object-assign
  *  Copyright 2018 John Madhavan-Reese
  *  Released under the MIT license
  */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
 /**
  * @license

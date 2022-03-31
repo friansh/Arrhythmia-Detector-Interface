@@ -11,7 +11,6 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import { useCookies } from "react-cookie";
 import Axios from "axios";
-import Classify from "../App/Classify";
 
 const useStyles = makeStyles(theme => ({
     infoCard: {
@@ -54,10 +53,10 @@ export default function History() {
                 response.data.map(data => {
                     if (data.result != 0) {
                         let startTime = new Date(data.created_at);
-                        startTime.setHours(startTime.getHours() - 1);
+                        startTime.setMinutes(startTime.getMinutes() - 10);
                         eventBuffer.push({
                             id: data.id,
-                            title: Classify(data.result),
+                            title: data.classification_result,
                             start: startTime,
                             end: new Date(data.created_at)
                         });
